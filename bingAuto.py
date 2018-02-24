@@ -45,3 +45,4 @@ def get_credits():
     return current_credits
 def hello():
     print("Hello World")
+    print("testing update!")
