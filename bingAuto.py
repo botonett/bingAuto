@@ -23,18 +23,13 @@ def get_credits():
         chrome_options1 = Options()
         chrome_options1.add_argument("user-data-dir=C:/Users/bing/AppData/Local/Google/Chrome/User Data")
         driver1 = webdriver.Chrome(chrome_options = chrome_options1)
-        driver1.get('https://account.microsoft.com/rewards/')
-        current_credits = (driver1.find_elements_by_xpath("""//*[@id="userStatus"]/div/mee-rewards-user-status-counter/div[1]/div/div/div/div/p[1]""")[0].text).replace(',','')
-        driver1.quit()
+        driver1.get('https://www.bing.com/')
+        time.sleep(4)
+        current_credits = driver1.find_element_by_id("id_rc").text
+        driver1.quit()   
         return int(current_credits)
-    except:
-        print("failed")
+    except Exception as E:
+        print("failed" + str(E))
 
 
 print(get_credits())
-def test():
-    print("hello world")
-def test2():
-    print("hi")
-def test3():
-    print("hi")
