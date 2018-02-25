@@ -32,3 +32,5 @@ def get_credits():
 
 
 print(get_credits())
+def test():
+    print("hello world")
