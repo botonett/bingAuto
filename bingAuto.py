@@ -31,4 +31,4 @@ def get_credits():
         print("failed")
 
 
-
+print(get_credits())
