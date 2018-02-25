@@ -34,3 +34,5 @@ def get_credits():
 print(get_credits())
 def test():
     print("hello world")
+def test2():
+    print("hi")
