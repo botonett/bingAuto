@@ -36,3 +36,5 @@ def test():
     print("hello world")
 def test2():
     print("hi")
+def test3():
+    print("hi")
