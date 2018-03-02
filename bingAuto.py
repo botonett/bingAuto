@@ -252,7 +252,7 @@ if __name__ == "__main__":
                  profile.append(line.strip())
     Shutdown = profile[7]
     keyWords = keywords()
-    size = len(keywords())
+    size = len(keyWords)
     global keyWords
     global size
     print('Initialize Human Like Search Sequence:')
