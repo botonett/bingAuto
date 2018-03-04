@@ -25,12 +25,21 @@ def get_credits():
         chrome_options1.add_argument("user-data-dir=C:/Users/bing/AppData/Local/Google/Chrome/User Data")
         driver1 = webdriver.Chrome(chrome_options = chrome_options1)
         driver1.get('https://www.bing.com/')
-        time.sleep(4)
+        time.sleep(0)
         current_credits = driver1.find_element_by_id("id_rc").text
-        driver1.quit()   
+        counter = 5
+        while(counter > 0):
+            counter = counter - 1
+            try:
+                int(current_credits)
+            except:
+                time.sleep(4)
+                current_credits = driver1.find_element_by_id("id_rc").text
+        driver1.quit()
+        print("Current Credits: "+ str(current_credits))
         return int(current_credits)
     except Exception as E:
-        print("failed" + str(E))
+        print("failed to get credit after 20 seconds with error: " + str(E))
 
 def get_profile():
     profile = []
