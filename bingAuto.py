@@ -25,13 +25,14 @@ def get_credits():
         chrome_options1.add_argument("user-data-dir=C:/Users/bing/AppData/Local/Google/Chrome/User Data")
         driver1 = webdriver.Chrome(chrome_options = chrome_options1)
         driver1.get('https://www.bing.com/')
-        time.sleep(0)
+        time.sleep(4)
         current_credits = driver1.find_element_by_id("id_rc").text
         counter = 5
         while(counter > 0):
             counter = counter - 1
             try:
                 int(current_credits)
+                break
             except:
                 time.sleep(4)
                 current_credits = driver1.find_element_by_id("id_rc").text
