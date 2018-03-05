@@ -283,6 +283,6 @@ if __name__ == "__main__":
         gain = "Failed to get credits"
     user, pwd = getAccount()
     subject = Account + ' on '+ Host + ' ' + VM +' gained: ' + str(gain) + ' credits.' 
-    body = ('Account: '+ Account +' currently has: ' + str(postsearch_credits)) + ' credits!'
+    body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!'
     send_email(user, pwd, Report, subject, body)
     shutdown(Shutdown)
