@@ -257,6 +257,7 @@ if __name__ == "__main__":
     Report = profile[3].split("=")[1]
     PCSeach = int(profile[4].split("=")[1])
     MobileSearch = int(profile[5].split("=")[1])
+    SMSemail = Report.split("@")[1]
     with open("C:\\Users\\bing\\Desktop\\Bing2.0\\data\\shutdown.dat", 'r') as pf:
             for line in pf:
                  profile.append(line.strip())
@@ -283,6 +284,8 @@ if __name__ == "__main__":
         gain = "Failed to get credits"
     user, pwd = getAccount()
     subject = Account + ' on '+ Host + ' ' + VM +' gained: ' + str(gain) + ' credits.' 
+    if(SMSemail == 'tmomail.net'):
+        subject = 'Gained: ' + str(gain) + ' credits.'
     body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!'
     send_email(user, pwd, Report, subject, body)
     shutdown(Shutdown)
