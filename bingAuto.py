@@ -18,7 +18,7 @@ from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.chrome.options import Options
 import smtplib
 import re
-
+import datetime
 def get_credits():
     try:
         chrome_options1 = Options()
@@ -248,8 +248,35 @@ def shutdown(shutdown):
     else:
         print('No more task, testing has been completed, wait 5s!')
         time.sleep(5)
-
+        
+def get_progress():
+    try:
+        chrome_options1 = Options()
+        chrome_options1.add_argument("user-data-dir=C:/Users/bing/AppData/Local/Google/Chrome/User Data")
+        driver1 = webdriver.Chrome(chrome_options = chrome_options1)
+        driver1.get('https://www.bing.com/')
+        time.sleep(2)
+        driver1.find_element_by_id("id_rh").click()
+        time.sleep(2)
+        driver1.switch_to_frame("bepfm")
+        data =  driver1.find_elements_by_class_name("breakdown")
+        counter = 5
+        while(counter > 0):
+            if(len(data) > 0):
+                PC_SEARCH = (data[0].text).split("\n")[1][12:]
+                MOBILE_SEARCH = (data[0].text).split("\n")[2][9:]
+                driver1.quit()
+                return PC_SEARCH,MOBILE_SEARCH
+                break
+            else:
+                counter = counter - 1
+                sleep(1)
+                data =  driver1.find_elements_by_class_name("breakdown")
+        return "failed","failed"
+    except Exception as E:
+        print("failed to get current progress: " + str(E))
 if __name__ == "__main__":
+    time1 = datetime.datetime.now()
     profile = get_profile()
     Account = profile[0]
     VM = profile[1].split("=")[1]
@@ -273,8 +300,42 @@ if __name__ == "__main__":
     get_credit_failed = False
     if(isinstance(presearch_credits,int) == False):
         get_credit_failed = True
-    search(PCSeach)
-    mobile_search(MobileSearch)
+    
+    #check for pc search stat
+
+    PC_SEARCH,MOBILE_SEARCH = get_progress()
+    if(PC_SEARCH != "failed" and MOBILE_SEARCH != "failed"):
+        MAX_PC = int(PC_SEARCH.split("/")[1])
+        CUR_PC = int(PC_SEARCH.split("/")[0])
+        while(CUR_PC < MAX_PC):
+            print("Current PC Search Progress: "+ str(PC_SEARCH))
+            diff = int((MAX_PC - CUR_PC)/5)
+            print("Making " + str(diff+1) + " additional searches!")
+            search(diff+1)
+            PC_SEARCH,MOBILE_SEARCH = get_progress()
+            MAX_PC = int(PC_SEARCH.split("/")[1])
+            CUR_PC = int(PC_SEARCH.split("/")[0])
+    else:
+        #legacy search if adaptive search failed
+        search(PCSeach)
+        mobile_search(MobileSearch)
+
+    
+    #check for mobile search stat
+    PC_SEARCH,MOBILE_SEARCH = get_progress()
+    if(PC_SEARCH != "failed" and MOBILE_SEARCH != "failed"):
+        MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
+        CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
+
+        while(CUR_MOBILE < MAX_MOBILE):
+            print("Current Mobile Search Progress: "+ str(MOBILE_SEARCH))
+            diff = int((MAX_MOBILE - CUR_MOBILE)/5)
+            print("Making " + str(diff+1) + " additional searches!")
+            mobile_search(diff+1)
+            PC_SEARCH,MOBILE_SEARCH = get_progress()
+            MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
+            CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
+
     if(get_credit_failed == False):
         pass
         postsearch_credits = get_credits()
@@ -282,10 +343,14 @@ if __name__ == "__main__":
     else:
         postsearch_credits = "Failed to get credits"
         gain = "Failed to get credits"
+    time2 = datetime.datetime.now()
+    timeDiff = time2 - time1
     user, pwd = getAccount()
     subject = Account + ' on '+ Host + ' ' + VM +' gained: ' + str(gain) + ' credits.' 
+    body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!' + "\n" +"Total time spent: " + str(timeDiff)
     if(SMSemail == 'tmomail.net'):
         subject = 'Gained: ' + str(gain) + ' credits.'
-    body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!'
+        body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!'+ " Total time spent: " + str(timeDiff)
+   
     send_email(user, pwd, Report, subject, body)
     shutdown(Shutdown)
