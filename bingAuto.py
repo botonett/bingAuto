@@ -385,10 +385,10 @@ if __name__ == "__main__":
     timeDiff = time2 - time1
     user, pwd = getAccount()
     subject = Account + ' on '+ Host + ' ' + VM +' gained: ' + str(gain) + ' credits.' 
-    body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!' + "\n" +"Total time spent: " + str(timeDiff)
+    body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!' + "\n" +"Total time spent: " + str(timeDiff) + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " + MOBILE_SEARCH
     if(SMSemail == 'tmomail.net'):
         subject = 'Gained: ' + str(gain) + ' credits.'
-        body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!'+ " Total time spent: " + str(timeDiff)
+        body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!'+ " Total time spent: " + str(timeDiff) + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " + MOBILE_SEARCH
    
     send_email(user, pwd, Report, subject, body)
     shutdown(Shutdown)
