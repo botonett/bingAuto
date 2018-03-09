@@ -186,8 +186,8 @@ def mobile_search(range1):
                 "userAgent": "Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Build/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19" }
             chrome_options = Options()
             chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
-            chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
-            chrome_options1.add_argument(current_working_dir)
+            chrome_options.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
+            chrome_options.add_argument(current_working_dir)
             driver = webdriver.Chrome(chrome_options = chrome_options)
             driver.get('http://bing.com')
         except(KeyboardInterrupt, SystemExit):
