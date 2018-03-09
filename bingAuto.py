@@ -19,10 +19,19 @@ from selenium.webdriver.chrome.options import Options
 import smtplib
 import re
 import datetime
+from unipath import Path
+import sys
+
+current_user = os.getlogin()
+current_working_dir, filename = os.path.split(os.path.abspath(__file__))
+home = Path(current_working_dir).parent
+sys.path.append(home)
+os.chdir(current_working_dir)
 def get_credits():
     try:
         chrome_options1 = Options()
-        chrome_options1.add_argument("user-data-dir=C:/Users/bing/AppData/Local/Google/Chrome/User Data")
+        chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
+        chrome_options1.add_argument(current_working_dir)
         driver1 = webdriver.Chrome(chrome_options = chrome_options1)
         driver1.get('https://www.bing.com/')
         time.sleep(4)
@@ -44,17 +53,17 @@ def get_credits():
 
 def get_profile():
     profile = []
-    with open("C:\\Users\\bing\\Desktop\\Bing2.0\\data\\profile.dat", 'r') as pf:
+    with open(home + "\\data\\profile.dat", 'r') as pf:
             for line in pf:
                  profile.append(line.strip())
-    with open("C:\\Users\\bing\\Desktop\\Bing2.0\\data\\shutdown.dat", 'r') as pf:
+    with open(home+"\\data\\shutdown.dat", 'r') as pf:
             for line in pf:
                  profile.append(line.strip())
     return profile
 
 def getAccount():
     profile = []
-    with open("C:\\Users\\bing\\Desktop\\Bing2.0\\data\\reportEngine.dat", 'r') as pf:
+    with open(home+"\\data\\reportEngine.dat", 'r') as pf:
             for line in pf:
                  profile.append(line.strip())
     return profile[0],profile[1]
@@ -87,7 +96,7 @@ def keywords():
     #make a list ready for search
     keyWords = []
     
-    with open('C:\\Users\\bing\\Desktop\\Bing2.0\\data\\keyWords_Backup.dat', 'r') as f:
+    with open(home + '\\data\\keyWords_Backup.dat', 'r') as f:
         for line in f:
             keyWords.append(line.strip())
     print('Library Preparation Successful: ' + str(len(keyWords))+ ' Keywords')
@@ -101,11 +110,11 @@ def search(range1):
     minutes = 0
     seconds = 0
     range1 = range1
-
+    edge_path = current_working_dir+ "\\MicrosoftWebDriver.exe"
     
     for x in range(0, range1):
         try:
-            driver = webdriver.Edge()
+            driver = webdriver.Edge(edge_path)
             driver.get('http://bing.com')
         except(KeyboardInterrupt, SystemExit):
             raise
@@ -115,7 +124,7 @@ def search(range1):
             #driver.quit()
            
             print("restarting search process")
-            driver = webdriver.Edge()
+            driver = webdriver.Edge(edge_path)
             driver.get('http://bing.com')
         time.sleep(3)
         seed = randomNum(size)
@@ -177,7 +186,8 @@ def mobile_search(range1):
                 "userAgent": "Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Build/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19" }
             chrome_options = Options()
             chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
-            chrome_options.add_argument("user-data-dir=C:/Users/bing/AppData/Local/Google/Chrome/User Data")
+            chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
+            chrome_options1.add_argument(current_working_dir)
             driver = webdriver.Chrome(chrome_options = chrome_options)
             driver.get('http://bing.com')
         except(KeyboardInterrupt, SystemExit):
@@ -198,7 +208,8 @@ def mobile_search(range1):
                 "userAgent": "Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Build/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19" }
             chrome_options = Options()
             chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
-            chrome_options.add_argument("user-data-dir=C:/Users/bing/AppData/Local/Google/Chrome/User Data")
+            chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
+            chrome_options1.add_argument(current_working_dir)
             driver = webdriver.Chrome(chrome_options = chrome_options)
             driver.get('http://bing.com')
         time.sleep(3)
@@ -252,7 +263,8 @@ def shutdown(shutdown):
 def get_progress():
     try:
         chrome_options1 = Options()
-        chrome_options1.add_argument("user-data-dir=C:/Users/bing/AppData/Local/Google/Chrome/User Data")
+        chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
+        chrome_options1.add_argument(current_working_dir)
         driver1 = webdriver.Chrome(chrome_options = chrome_options1)
         driver1.get('https://www.bing.com/')
         time.sleep(2)
@@ -265,6 +277,17 @@ def get_progress():
             if(len(data) > 0):
                 PC_SEARCH = (data[0].text).split("\n")[1][12:]
                 MOBILE_SEARCH = (data[0].text).split("\n")[2][9:]
+                try:
+                    MAX_PC = int(PC_SEARCH.split("/")[1])
+                    CUR_PC = int(PC_SEARCH.split("/")[0])
+                except:
+                    PC_SEARCH = "failed"
+                
+                try:
+                    MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
+                    CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
+                except:
+                    MOBILE_SEARCH = "failed"
                 driver1.quit()
                 return PC_SEARCH,MOBILE_SEARCH
                 break
@@ -275,7 +298,11 @@ def get_progress():
         return "failed","failed"
     except Exception as E:
         print("failed to get current progress: " + str(E))
+
+
 if __name__ == "__main__":
+    print("home folder: "+home)
+    print("cur dir "+current_working_dir)
     time1 = datetime.datetime.now()
     profile = get_profile()
     Account = profile[0]
@@ -285,7 +312,7 @@ if __name__ == "__main__":
     PCSeach = int(profile[4].split("=")[1])
     MobileSearch = int(profile[5].split("=")[1])
     SMSemail = Report.split("@")[1]
-    with open("C:\\Users\\bing\\Desktop\\Bing2.0\\data\\shutdown.dat", 'r') as pf:
+    with open(home+"\\data\\shutdown.dat", 'r') as pf:
             for line in pf:
                  profile.append(line.strip())
     Shutdown = profile[7]
@@ -304,7 +331,7 @@ if __name__ == "__main__":
     #check for pc search stat
 
     PC_SEARCH,MOBILE_SEARCH = get_progress()
-    if(PC_SEARCH != "failed" and MOBILE_SEARCH != "failed"):
+    if(PC_SEARCH != "failed"):
         MAX_PC = int(PC_SEARCH.split("/")[1])
         CUR_PC = int(PC_SEARCH.split("/")[0])
         while(CUR_PC < MAX_PC):
@@ -318,12 +345,12 @@ if __name__ == "__main__":
     else:
         #legacy search if adaptive search failed
         search(PCSeach)
-        mobile_search(MobileSearch)
+        
 
     
     #check for mobile search stat
     PC_SEARCH,MOBILE_SEARCH = get_progress()
-    if(PC_SEARCH != "failed" and MOBILE_SEARCH != "failed"):
+    if(MOBILE_SEARCH != "failed"):
         MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
         CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
 
@@ -335,6 +362,8 @@ if __name__ == "__main__":
             PC_SEARCH,MOBILE_SEARCH = get_progress()
             MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
             CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
+    else:
+        mobile_search(MobileSearch)
 
     if(get_credit_failed == False):
         pass
