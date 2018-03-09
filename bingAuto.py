@@ -304,7 +304,7 @@ def get_progress():
                 break
             else:
                 counter = counter - 1
-                sleep(1)
+                time.sleep(1)
                 data =  driver1.find_elements_by_class_name("breakdown")
         return "failed","failed"
     except Exception as E:
