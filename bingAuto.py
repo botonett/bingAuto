@@ -50,6 +50,7 @@ def get_credits():
         return int(current_credits)
     except Exception as E:
         print("failed to get credit after 20 seconds with error: " + str(E))
+        notify("failed to get credit after 20 seconds with error: " + str(E))
 
 def get_profile():
     profile = []
@@ -291,14 +292,16 @@ def get_progress():
                     PC_SEARCH = (data[0].text).split("\n")[1][12:]
                     MAX_PC = int(PC_SEARCH.split("/")[1])
                     CUR_PC = int(PC_SEARCH.split("/")[0])
-                except:
+                except Exception as E:
+                    notify(str(E))
                     PC_SEARCH = "failed"
                 
                 try:
                     MOBILE_SEARCH = (data[0].text).split("\n")[2][9:]
                     MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
                     CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
-                except:
+                except Exception as E:
+                    notify(str(E))
                     MOBILE_SEARCH = "failed"
                 driver1.quit()
                 return PC_SEARCH,MOBILE_SEARCH
@@ -310,6 +313,7 @@ def get_progress():
         return "failed","failed"
     except Exception as E:
         print("failed to get current progress: " + str(E))
+        notify("Failed to get current progress: " + str(E))
         return "failed","failed"
 def fortune():
     quotes = []
@@ -318,6 +322,21 @@ def fortune():
             quotes.append(line.strip())
     seed = randomNum(len(quotes)-1)
     return quotes[seed]    
+
+def notify(error):
+    current_working_dir, filename = os.path.split(os.path.abspath(__file__))
+    profile = get_profile()
+    user, pwd = getAccount()
+    Account = profile[0]
+    VM = profile[1].split("=")[1]
+    Host = profile[2].split("=")[1]
+    Report = profile[3].split("=")[1]
+    PCSeach = int(profile[4].split("=")[1])
+    MobileSearch = int(profile[5].split("=")[1])
+    SMSemail = Report.split("@")[1]
+    subject = "Critical error on: " + Host + " " + VM + " " + filename
+    body = "The following error has occured: " + error
+    send_email(user, pwd, Report, subject, body)
 
 if __name__ == "__main__":
     time1 = datetime.datetime.now()
@@ -362,6 +381,7 @@ if __name__ == "__main__":
     else:
         #legacy search if adaptive search failed
         search(PCSeach)
+        notify("PC adaptive search failed, begins legacy search with " + str(PCSeach) + " searches.")
         
 
     
@@ -381,9 +401,9 @@ if __name__ == "__main__":
             CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
     else:
         mobile_search(MobileSearch)
+        notify("Mobile adaptive search failed, begins legacy search with " + str(MobileSearch) + " searches.")
 
     if(get_credit_failed == False):
-        pass
         postsearch_credits = get_credits()
         gain = postsearch_credits - presearch_credits
     else:
