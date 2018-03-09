@@ -267,12 +267,23 @@ def get_progress():
         chrome_options1.add_argument(current_working_dir)
         driver1 = webdriver.Chrome(chrome_options = chrome_options1)
         driver1.get('https://www.bing.com/')
-        time.sleep(4)
+        time.sleep(2)
         driver1.find_element_by_id("id_rh").click()
-        time.sleep(4)
+        time.sleep(2)
         driver1.switch_to_frame("bepfm")
         data =  driver1.find_elements_by_class_name("breakdown")
+        timeout = 1
+        while(data == None):
+            print("Failed to get progress - retrying up to 20 times!")
+            print("Try: " + str(timeout))
+            time.sleep(1)
+            timeout = timeout + 1 
+            data =  driver1.find_elements_by_class_name("breakdown")
+            if((timeout == 20) and (data == None)):
+                return "failed","failed"
+                break
         counter = 5
+        
         while(counter > 0):
             if(len(data) > 0):
                 PC_SEARCH = (data[0].text).split("\n")[1][12:]
