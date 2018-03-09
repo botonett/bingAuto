@@ -267,9 +267,9 @@ def get_progress():
         chrome_options1.add_argument(current_working_dir)
         driver1 = webdriver.Chrome(chrome_options = chrome_options1)
         driver1.get('https://www.bing.com/')
-        time.sleep(2)
+        time.sleep(4)
         driver1.find_element_by_id("id_rh").click()
-        time.sleep(2)
+        time.sleep(4)
         driver1.switch_to_frame("bepfm")
         data =  driver1.find_elements_by_class_name("breakdown")
         counter = 5
