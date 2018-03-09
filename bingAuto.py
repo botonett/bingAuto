@@ -309,7 +309,13 @@ def get_progress():
         return "failed","failed"
     except Exception as E:
         print("failed to get current progress: " + str(E))
-
+def fortune():
+    quotes = []
+    with open("fortune_database2.txt", 'r') as pf:
+        for line in pf:
+            quotes.append(line.strip())
+    seed = randomNum(len(quotes)-1)
+    return quotes[seed]    
 
 if __name__ == "__main__":
     time1 = datetime.datetime.now()
@@ -385,10 +391,10 @@ if __name__ == "__main__":
     timeDiff = time2 - time1
     user, pwd = getAccount()
     subject = Account + ' on '+ Host + ' ' + VM +' gained: ' + str(gain) + ' credits.' 
-    body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!' + "\n" +"Total time spent: " + str(timeDiff) + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " + MOBILE_SEARCH
+    body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!' + "\n" +"Total time spent: " + str(timeDiff) + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " + MOBILE_SEARCH + "\n" + fortune()
     if(SMSemail == 'tmomail.net'):
         subject = 'Gained: ' + str(gain) + ' credits.'
-        body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!'+ " Total time spent: " + str(timeDiff) + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " + MOBILE_SEARCH
+        body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!'+ " Total time spent: " + str(timeDiff) + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " + MOBILE_SEARCH + "\n" + fortune()
    
     send_email(user, pwd, Report, subject, body)
     shutdown(Shutdown)
