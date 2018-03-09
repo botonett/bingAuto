@@ -301,8 +301,6 @@ def get_progress():
 
 
 if __name__ == "__main__":
-    print("home folder: "+home)
-    print("cur dir "+current_working_dir)
     time1 = datetime.datetime.now()
     profile = get_profile()
     Account = profile[0]
