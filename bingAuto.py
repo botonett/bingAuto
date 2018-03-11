@@ -416,7 +416,7 @@ if __name__ == "__main__":
         subject = 'Gained: ' + str(gain) + ' credits.'
         body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!'
         send_email(user, pwd, Report, subject, body)
-        subject = "Total time spent: " + str(timeDiff)
+        subject = "Total time spent: " + str(timeDiff)[:10]
         body = ' '
         send_email(user, pwd, Report, subject, body)
         subject ="Mobile Progress: " + MOBILE_SEARCH
@@ -424,7 +424,7 @@ if __name__ == "__main__":
         send_email(user, pwd, Report, subject, body)
     else:
         subject = Account + ' on '+ Host + ' ' + VM +' gained: ' + str(gain) + ' credits.'
-        body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!' + "\n" +"Total time spent: " + str(timeDiff) + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " + MOBILE_SEARCH + "\n" + fortune()
+        body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!' + "\n" +"Total time spent: " + str(timeDiff)[:10] + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " + MOBILE_SEARCH + "\n" + fortune()
         send_email(user, pwd, Report, subject, body)
 
     shutdown(Shutdown)
