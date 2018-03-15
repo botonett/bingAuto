@@ -119,11 +119,10 @@ def search(range1):
             driver.get('http://bing.com')
         except(KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except Exception as E:
             print("edge start failed, killing application")
-            
+            notify("PC search failed with error "+ str(E))
             #driver.quit()
-           
             print("restarting search process")
             driver = webdriver.Edge(edge_path)
             driver.get('http://bing.com')
@@ -131,14 +130,29 @@ def search(range1):
         seed = randomNum(size)
         pyautogui.typewrite(keyWords[seed] + '\n', interval=0.1)
         counter += 1
-        
         time.sleep(3)
+        try:
+            driver.switchTo().alert().dismiss();
+        except:
+            pass
         driver.execute_script("window.scrollTo(0, 200)")
         time.sleep(1.5)
+        try:
+            driver.switchTo().alert().dismiss();
+        except:
+            pass
         driver.execute_script("window.scrollTo(0, 150)")
         time.sleep(2)
+        try:
+            driver.switchTo().alert().dismiss();
+        except:
+            pass
         driver.execute_script("window.scrollTo(0, 300)")
         time.sleep(2)
+        try:
+            driver.switchTo().alert().dismiss();
+        except:
+            pass
         driver.execute_script("window.scrollTo(0, 150)")
         pyautogui.mouseDown(x=339, y=314, button='left')
         pyautogui.mouseUp(x=339, y=314, button='left')
@@ -193,7 +207,8 @@ def mobile_search(range1):
             driver.get('http://bing.com')
         except(KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except Exception as E:
+            notify("Mobile search failed with error "+ str(E))
             print("open chrome failed, kiling application")
             os.system("KillChrome.bat")
             #driver.quit()
@@ -213,6 +228,7 @@ def mobile_search(range1):
             chrome_options.add_argument(current_working_dir)
             driver = webdriver.Chrome(chrome_options = chrome_options)
             driver.get('http://bing.com')
+            
         time.sleep(3)
         seed = randomNum(size)
         search_box = driver.find_element_by_name('q')
@@ -222,13 +238,33 @@ def mobile_search(range1):
         counter += 1
         
         time.sleep(3)
+        try:
+            driver.switchTo().alert().dismiss();
+        except:
+            pass
         driver.execute_script("window.scrollTo(0, 200)")
         time.sleep(1.5)
+        try:
+            driver.switchTo().alert().dismiss();
+        except:
+            pass
         driver.execute_script("window.scrollTo(0, 150)")
         time.sleep(2)
+        try:
+            driver.switchTo().alert().dismiss();
+        except:
+            pass
         driver.execute_script("window.scrollTo(0, 300)")
         time.sleep(2)
+        try:
+            driver.switchTo().alert().dismiss();
+        except:
+            pass
         driver.execute_script("window.scrollTo(0, 150)")
+        try:
+            driver.switchTo().alert().dismiss();
+        except:
+            pass
         pyautogui.mouseDown(x=339, y=314, button='left')
         pyautogui.mouseUp(x=339, y=314, button='left')
         time.sleep(2)
@@ -339,6 +375,7 @@ def notify(error):
     send_email(user, pwd, Report, subject, body)
 
 if __name__ == "__main__":
+    
     time1 = datetime.datetime.now()
     profile = get_profile()
     Account = profile[0]
@@ -365,7 +402,7 @@ if __name__ == "__main__":
         get_credit_failed = True
     
     #check for pc search stat
-
+    
     PC_SEARCH,MOBILE_SEARCH = get_progress()
     if(PC_SEARCH != "failed"):
         MAX_PC = int(PC_SEARCH.split("/")[1])
