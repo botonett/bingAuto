@@ -161,7 +161,7 @@ def search(range1):
         pyautogui.mouseUp(x=312, y=336, button='left')
         time.sleep(3)
         driver.quit()
-        temp2 = randint(3,10)
+        temp2 = randint(3,5)
         timeSpent = timeSpent + temp2
         print('Searched '+ str(counter)+ ' out of ' + str(range1) + ': ' + str(keyWords[seed]))
         print('Waiting for: '+ str(temp2) +' Seconds' )
@@ -272,7 +272,7 @@ def mobile_search(range1):
         pyautogui.mouseUp(x=312, y=336, button='left')
         time.sleep(3)
         driver.quit()
-        temp2 = randint(3,10)
+        temp2 = randint(3,5)
         timeSpent = timeSpent + temp2
         print('Mobile Searched '+ str(counter)+ ' out of ' + str(range1) + ': ' + str(keyWords[seed]))
         print('Waiting for: '+ str(temp2) +' Seconds' )
