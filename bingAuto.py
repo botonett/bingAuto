@@ -32,6 +32,7 @@ def get_credits():
         chrome_options1 = Options()
         chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
         chrome_options1.add_argument(current_working_dir)
+        chrome_options1.add_argument("--log-level=3")
         driver1 = webdriver.Chrome(chrome_options = chrome_options1)
         driver1.get('https://www.bing.com/')
         time.sleep(4)
@@ -120,7 +121,7 @@ def search(range1):
         except(KeyboardInterrupt, SystemExit):
             raise
         except Exception as E:
-            print("edge start failed, killing application")
+            print("edge start failed, killing application " + str(E))
             notify("PC search failed with error "+ str(E))
             #driver.quit()
             print("restarting search process")
@@ -203,13 +204,14 @@ def mobile_search(range1):
             chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
             chrome_options.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
             chrome_options.add_argument(current_working_dir)
+            chrome_options.add_argument("--log-level=3")
             driver = webdriver.Chrome(chrome_options = chrome_options)
             driver.get('http://bing.com')
         except(KeyboardInterrupt, SystemExit):
             raise
         except Exception as E:
             notify("Mobile search failed with error "+ str(E))
-            print("open chrome failed, kiling application")
+            print("open chrome failed, kiling application " + str(E))
             os.system("KillChrome.bat")
             #driver.quit()
            
@@ -317,6 +319,7 @@ def get_progress():
             timeout = timeout + 1 
             data =  driver1.find_elements_by_class_name("breakdown")
             if((timeout == 20) and (data == None)):
+                driver1.quit()
                 return "failed","failed"
                 break
         counter = 5
@@ -346,10 +349,12 @@ def get_progress():
                 counter = counter - 1
                 time.sleep(1)
                 data =  driver1.find_elements_by_class_name("breakdown")
+        driver1.quit()
         return "failed","failed"
     except Exception as E:
         print("failed to get current progress: " + str(E))
         notify("Failed to get current progress: " + str(E))
+        driver1.quit()
         return "failed","failed"
 def fortune():
     quotes = []
@@ -437,8 +442,9 @@ if __name__ == "__main__":
             MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
             CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
     else:
-        mobile_search(MobileSearch)
         notify("Mobile adaptive search failed, begins legacy search with " + str(MobileSearch) + " searches.")
+        mobile_search(MobileSearch)
+        
 
     if(get_credit_failed == False):
         postsearch_credits = get_credits()
