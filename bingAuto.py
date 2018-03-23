@@ -323,7 +323,6 @@ def get_progress():
                 return "failed","failed"
                 break
         counter = 5
-        
         while(counter > 0):
             if(len(data) > 0):
                 
@@ -356,6 +355,7 @@ def get_progress():
         notify("Failed to get current progress: " + str(E))
         driver1.quit()
         return "failed","failed"
+
 def fortune():
     quotes = []
     with open("fortune_database2.txt", 'r') as pf:
@@ -379,8 +379,16 @@ def notify(error):
     body = "The following error has occured: " + error
     send_email(user, pwd, Report, subject, body)
 
-if __name__ == "__main__":
+def isInt(var):
+    try:
+        int(var)
+        return True
+    except:
+        return False
     
+if __name__ == "__main__":
+    total_legacy_search = 0
+    total_adaptive_search = 0
     time1 = datetime.datetime.now()
     profile = get_profile()
     Account = profile[0]
@@ -403,11 +411,10 @@ if __name__ == "__main__":
     postsearch_credits = 0
     gain = 0
     get_credit_failed = False
-    if(isinstance(presearch_credits,int) == False):
+    if(isInt(presearch_credits) == False):
         get_credit_failed = True
     
     #check for pc search stat
-    
     PC_SEARCH,MOBILE_SEARCH = get_progress()
     if(PC_SEARCH != "failed"):
         MAX_PC = int(PC_SEARCH.split("/")[1])
@@ -415,6 +422,7 @@ if __name__ == "__main__":
         while(CUR_PC < MAX_PC):
             print("Current PC Search Progress: "+ str(PC_SEARCH))
             diff = int((MAX_PC - CUR_PC)/5)
+            total_adaptive_search = total_adaptive_search + diff + 1
             print("Making " + str(diff+1) + " additional searches!")
             search(diff+1)
             PC_SEARCH,MOBILE_SEARCH = get_progress()
@@ -422,10 +430,9 @@ if __name__ == "__main__":
             CUR_PC = int(PC_SEARCH.split("/")[0])
     else:
         #legacy search if adaptive search failed
-        search(PCSeach)
         notify("PC adaptive search failed, begins legacy search with " + str(PCSeach) + " searches.")
-        
-
+        total_legacy_search = PCSeach + total_legacy_search
+        search(PCSeach)
     
     #check for mobile search stat
     PC_SEARCH,MOBILE_SEARCH = get_progress()
@@ -436,13 +443,16 @@ if __name__ == "__main__":
         while(CUR_MOBILE < MAX_MOBILE):
             print("Current Mobile Search Progress: "+ str(MOBILE_SEARCH))
             diff = int((MAX_MOBILE - CUR_MOBILE)/5)
+            total_adaptive_search = total_adaptive_search + diff + 1
             print("Making " + str(diff+1) + " additional searches!")
             mobile_search(diff+1)
             PC_SEARCH,MOBILE_SEARCH = get_progress()
             MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
             CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
     else:
+        #legacy search if adaptive search failed
         notify("Mobile adaptive search failed, begins legacy search with " + str(MobileSearch) + " searches.")
+        total_legacy_search = MobileSearch + total_legacy_search
         mobile_search(MobileSearch)
         
 
@@ -467,7 +477,7 @@ if __name__ == "__main__":
         send_email(user, pwd, Report, subject, body)
     else:
         subject = Account + ' on '+ Host + ' ' + VM +' gained: ' + str(gain) + ' credits.'
-        body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!' + "\n" +"Total time spent: " + str(timeDiff)[:10] + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " + MOBILE_SEARCH + "\n" + fortune()
+        body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!' + "\n" +"Total time spent: " + str(timeDiff)[:10] + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " + MOBILE_SEARCH + "\n" + "Total adaptive searches done: " + str(total_adaptive_search)+ "\n"+ "Total legacy seaches done: "+ str(total_legacy_search)+ "\n" +fortune()
         send_email(user, pwd, Report, subject, body)
 
     shutdown(Shutdown)
