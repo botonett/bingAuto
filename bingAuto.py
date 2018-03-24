@@ -622,6 +622,8 @@ if __name__ == "__main__":
         MOBILE_SEARCH = "Failed"
 
     if(Microsoft_Edge_bonus != None):
+        temp = processReport("Microsoft Edge bonus",report)
+        Microsoft_Edge_bonus = processLeaf("Microsoft Edge bonus",temp)
         EdgeStat = Microsoft_Edge_bonus[0] + "/" + Microsoft_Edge_bonus[1]
     else:
         EdgeStat = "Failed"
