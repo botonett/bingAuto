@@ -16,6 +16,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.alert import Alert
 import smtplib
 import re
 import datetime
