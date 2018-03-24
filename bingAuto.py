@@ -107,6 +107,7 @@ def keywords():
 
 #start PC Search on Edge
 def search(range1):
+    time1 = datetime.datetime.now()
     counter = 0
     temp2 = 0
     timeSpent = 16.5
@@ -119,64 +120,53 @@ def search(range1):
         try:
             driver = webdriver.Edge(edge_path)
             driver.get('http://bing.com')
-        except(KeyboardInterrupt, SystemExit):
-            raise
+            time.sleep(3)
+            seed = randomNum(size)
+            pyautogui.typewrite(keyWords[seed] + '\n', interval=0.1)
+            counter += 1
+            time.sleep(3)
+            try:
+                driver.switchTo().alert().dismiss();
+            except:
+                pass
+            driver.execute_script("window.scrollTo(0, 200)")
+            time.sleep(1.5)
+            try:
+                driver.switchTo().alert().dismiss();
+            except:
+                pass
+            driver.execute_script("window.scrollTo(0, 150)")
+            time.sleep(2)
+            try:
+                driver.switchTo().alert().dismiss();
+            except:
+                pass
+            driver.execute_script("window.scrollTo(0, 300)")
+            time.sleep(2)
+            try:
+                driver.switchTo().alert().dismiss();
+            except:
+                pass
+            driver.execute_script("window.scrollTo(0, 150)")
+            pyautogui.mouseDown(x=339, y=314, button='left')
+            pyautogui.mouseUp(x=339, y=314, button='left')
+            time.sleep(2)
+            pyautogui.mouseDown(x=339, y=314, button='left')
+            pyautogui.mouseUp(x=312, y=336, button='left')
+            time.sleep(3)
+            driver.quit()
+            temp2 = randint(3,5)
+            timeSpent = timeSpent + temp2
+            print('Searched '+ str(counter)+ ' out of ' + str(range1) + ': ' + str(keyWords[seed]))
+            print('Waiting for: '+ str(temp2) +' Seconds' )
+            time.sleep(temp2)
+            print('Total Words Seached in This Session:' + str(counter))
+            time2 = datetime.datetime.now()
+            timeDiff = time2 - time1
+            print("Total time spent on PC Search: " + str(timeDiff)[:10])
         except Exception as E:
-            print("edge start failed, killing application " + str(E))
-            notify("PC search failed with error "+ str(E))
-            #driver.quit()
-            print("restarting search process")
-            driver = webdriver.Edge(edge_path)
-            driver.get('http://bing.com')
-        time.sleep(3)
-        seed = randomNum(size)
-        pyautogui.typewrite(keyWords[seed] + '\n', interval=0.1)
-        counter += 1
-        time.sleep(3)
-        try:
-            driver.switchTo().alert().dismiss();
-        except:
-            pass
-        driver.execute_script("window.scrollTo(0, 200)")
-        time.sleep(1.5)
-        try:
-            driver.switchTo().alert().dismiss();
-        except:
-            pass
-        driver.execute_script("window.scrollTo(0, 150)")
-        time.sleep(2)
-        try:
-            driver.switchTo().alert().dismiss();
-        except:
-            pass
-        driver.execute_script("window.scrollTo(0, 300)")
-        time.sleep(2)
-        try:
-            driver.switchTo().alert().dismiss();
-        except:
-            pass
-        driver.execute_script("window.scrollTo(0, 150)")
-        pyautogui.mouseDown(x=339, y=314, button='left')
-        pyautogui.mouseUp(x=339, y=314, button='left')
-        time.sleep(2)
-        pyautogui.mouseDown(x=339, y=314, button='left')
-        pyautogui.mouseUp(x=312, y=336, button='left')
-        time.sleep(3)
-        driver.quit()
-        temp2 = randint(3,5)
-        timeSpent = timeSpent + temp2
-        print('Searched '+ str(counter)+ ' out of ' + str(range1) + ': ' + str(keyWords[seed]))
-        print('Waiting for: '+ str(temp2) +' Seconds' )
-        time.sleep(temp2)
-
-        print('Total Words Seached in This Session:' + str(counter))
-       
-        if(counter == 0):
-            timeSpent = 0
-        minutes = int(timeSpent/60)
-        seconds = timeSpent % 60
-        print('Total Time Spent is ' + str(minutes) + ' minute(s) ' + str(seconds) + " second(s).")
-        
+            print("edge start failed with error: " + str(E))
+            driver.quit()
     return counter
 
 #generate a random number that is not repeated
@@ -190,6 +180,7 @@ def randomNum(size):
             calledNum.append(seed)
     return seed
 def mobile_search(range1):
+    time1 = datetime.datetime.now()
     counter = 0
     temp2 = 0
     timeSpent = 16.5
@@ -256,16 +247,10 @@ def mobile_search(range1):
             print('Mobile Searched '+ str(counter)+ ' out of ' + str(range1) + ': ' + str(keyWords[seed]))
             print('Waiting for: '+ str(temp2) +' Seconds' )
             time.sleep(temp2)
-            
             print('Total Words Seached in This Mobile Session:' + str(counter))
-            
-            if(counter == 0):
-                timeSpent = 0
-            minutes = int(timeSpent/60)
-            seconds = timeSpent % 60
-            print('Total Time Spent is ' + str(minutes) + ' minute(s) ' + str(seconds) + " second(s).")   
-        #except(KeyboardInterrupt, SystemExit):
-        #    raise
+            time2 = datetime.datetime.now()
+            timeDiff = time2 - time1
+            print("Total time spent on Mobile Search: " + str(timeDiff)[:10])
         except Exception as E:
             #notify("Mobile search failed with error "+ str(E))
             driver.quit()    
@@ -487,10 +472,10 @@ def finalReport():
         Other_activities = None
     return PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities
 if __name__ == "__main__":
+    time1 = datetime.datetime.now()
     PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities = finalReport()
     total_legacy_search = 0
     total_adaptive_search = 0
-    time1 = datetime.datetime.now()
     profile = get_profile()
     Account = profile[0]
     VM = profile[1].split("=")[1]
@@ -545,7 +530,7 @@ if __name__ == "__main__":
             MAX_PC = int(PC_search[1])
             CUR_PC = int(PC_search[0])
             while(CUR_PC < MAX_PC):
-                    print("Current PC Search Progress: "+ str(CUR_PC))
+                    print("Current PC Search Progress: "+ str(CUR_PC)+"/"+str(MAX_PC))
                     diff = int((MAX_PC - CUR_PC)/5)
                     total_adaptive_search = total_adaptive_search + diff + 1
                     print("Making " + str(diff+1) + " additional searches!")
@@ -587,7 +572,7 @@ if __name__ == "__main__":
             MAX_MOBILE = int(Mobile_search[1])
             CUR_MOBILE = int(Mobile_search[0])
             while(CUR_MOBILE < MAX_MOBILE):
-                    print("Current Mobile Search Progress: "+ str(CUR_MOBILE))
+                    print("Current Mobile Search Progress: "+ str(CUR_MOBILE)+"/"+str(MAX_MOBILE))
                     diff = int((MAX_MOBILE - CUR_MOBILE)/5)
                     total_adaptive_search = total_adaptive_search + diff + 1
                     print("Making " + str(diff+1) + " additional searches!")
