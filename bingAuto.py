@@ -300,7 +300,7 @@ def shutdown(shutdown):
         print('No more task, testing has been completed, wait 5s!')
         time.sleep(5)
         
-def get_progress():
+def get_progress_legacy():
     try:
         chrome_options1 = Options()
         chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
@@ -387,6 +387,62 @@ def isInt(var):
     except:
         return False
     
+def advanced_progress():
+    try:
+        report = []
+        chrome_options1 = Options()
+        chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
+        chrome_options1.add_argument(current_working_dir)
+        driver1 = webdriver.Chrome(chrome_options = chrome_options1)
+        driver1.get('https://account.microsoft.com/rewards/pointsbreakdown')
+        data =  driver1.find_elements_by_class_name("title-detail")
+        timeout = 1
+        while(data == None):
+            print("Failed to get progress - retrying up to 20 times!")
+            print("Try: " + str(timeout))
+            time.sleep(1)
+            timeout = timeout + 1 
+            data =  driver1.find_elements_by_class_name("title-detail")
+            if((timeout == 20) and (data == None)):
+                driver1.quit()
+                return "failed"
+                break
+        time.sleep(1)
+        for item in data:
+            report.append((item.text).split("\n"))
+        driver1.quit()
+        return report
+    except Exception as E:
+        print("failed to get current progress: " + str(E))
+        notify("Advanced progress retrival failed with error: " + str(E))
+        driver1.quit()
+        return "failed"
+    
+def processReport(var,report):
+    for item in report:
+        for leaf in item:
+            if(var == leaf):
+                return item
+    return None
+
+def processLeaf(var,leaf):
+    if(var == "Available points"):
+        return leaf[0]
+    elif(var == "Streak count"):
+        return leaf[0]
+    elif(var == "Microsoft Edge bonus"):
+        return leaf[1].split(" / ")
+    elif(var == "PC search"):
+        return leaf[1].split(" / ")
+    elif(var == "Mobile search"):
+        return leaf[1].split(" / ")
+    elif(var == "Shop & earn"):
+        return leaf[1]
+    elif(var == "Other activities"):
+        return leaf[1].split(" / ")
+    else:
+        return None
+    
 if __name__ == "__main__":
     total_legacy_search = 0
     total_adaptive_search = 0
@@ -416,7 +472,7 @@ if __name__ == "__main__":
         get_credit_failed = True
     
     #check for pc search stat
-    PC_SEARCH,MOBILE_SEARCH = get_progress()
+    PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
     if(PC_SEARCH != "failed"):
         MAX_PC = int(PC_SEARCH.split("/")[1])
         CUR_PC = int(PC_SEARCH.split("/")[0])
@@ -426,7 +482,7 @@ if __name__ == "__main__":
             total_adaptive_search = total_adaptive_search + diff + 1
             print("Making " + str(diff+1) + " additional searches!")
             search(diff+1)
-            PC_SEARCH,MOBILE_SEARCH = get_progress()
+            PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
             MAX_PC = int(PC_SEARCH.split("/")[1])
             CUR_PC = int(PC_SEARCH.split("/")[0])
     else:
@@ -436,7 +492,7 @@ if __name__ == "__main__":
         search(PCSeach)
     
     #check for mobile search stat
-    PC_SEARCH,MOBILE_SEARCH = get_progress()
+    PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
     if(MOBILE_SEARCH != "failed"):
         MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
         CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
@@ -447,7 +503,7 @@ if __name__ == "__main__":
             total_adaptive_search = total_adaptive_search + diff + 1
             print("Making " + str(diff+1) + " additional searches!")
             mobile_search(diff+1)
-            PC_SEARCH,MOBILE_SEARCH = get_progress()
+            PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
             MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
             CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
     else:
