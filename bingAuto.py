@@ -550,6 +550,7 @@ if __name__ == "__main__":
                     total_adaptive_search = total_adaptive_search + diff + 1
                     print("Making " + str(diff+1) + " additional searches!")
                     search(diff+1)
+                    report = advanced_progress()
                     temp = processReport("PC search",report)
                     PC_search = processLeaf("PC search",temp)
                     MAX_PC = int(PC_search[1])
@@ -593,6 +594,7 @@ if __name__ == "__main__":
                     total_adaptive_search = total_adaptive_search + diff + 1
                     print("Making " + str(diff+1) + " additional searches!")
                     mobile_search(diff+1)
+                    report = advanced_progress()
                     temp = processReport("Mobile search",report)
                     Mobile_search = processLeaf("Mobile search",temp)
                     MAX_MOBILE = int(Mobile_search[1])
