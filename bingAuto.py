@@ -267,7 +267,7 @@ def mobile_search(range1):
         #except(KeyboardInterrupt, SystemExit):
         #    raise
         except Exception as E:
-            notify("Mobile search failed with error "+ str(E))
+            #notify("Mobile search failed with error "+ str(E))
             driver.quit()    
     return counter
 
@@ -536,7 +536,7 @@ if __name__ == "__main__":
                 CUR_PC = int(PC_SEARCH.split("/")[0])
         else:
             #legacy search if adaptive search failed
-            notify("PC adaptive search failed, begins legacy search with " + str(PCSeach) + " searches.")
+            notify("PC adaptive search failed "+ str(E) +", begins legacy search with " + str(PCSeach) + " searches.")
             total_legacy_search = PCSeach + total_legacy_search
             search(PCSeach)
     else:
@@ -557,7 +557,7 @@ if __name__ == "__main__":
                     CUR_PC = int(PC_search[0])
         except Exception as E:
             print("Adaptive PC search with advanced report failed with error: " + str(E))
-            notify("PC adaptive search failed, begins legacy search with " + str(PCSeach) + " searches.")
+            notify("PC adaptive search failed: "+ str(E) +", begins legacy search with " + str(PCSeach) + " searches.")
             total_legacy_search = PCSeach + total_legacy_search
             search(PCSeach)
 
