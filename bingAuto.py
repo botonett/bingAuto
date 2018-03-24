@@ -428,8 +428,7 @@ def progressCheck(progress):
     for item in progress:
         if(isInt(item) == False):
             return False
-
-if __name__ == "__main__":
+def finalReport():
     #begins advanced report setup
     PC_search = []
     Mobile_search = []
@@ -438,7 +437,6 @@ if __name__ == "__main__":
     report = advanced_progress()
     advanced_available_points = ""
     if(report != "failed"):
-        advanced_available_points = ""
         temp = processReport("PC search",report)
         if(temp != None):
             PC_search = processLeaf("PC search",temp)
@@ -487,7 +485,9 @@ if __name__ == "__main__":
         Microsoft_Edge_bonus = None
         advanced_available_points = None
         Other_activities = None
-    
+    return PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities
+if __name__ == "__main__":
+    PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities = finalReport()
     total_legacy_search = 0
     total_adaptive_search = 0
     time1 = datetime.datetime.now()
@@ -550,9 +550,7 @@ if __name__ == "__main__":
                     total_adaptive_search = total_adaptive_search + diff + 1
                     print("Making " + str(diff+1) + " additional searches!")
                     search(diff+1)
-                    report = advanced_progress()
-                    temp = processReport("PC search",report)
-                    PC_search = processLeaf("PC search",temp)
+                    PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities = finalReport()
                     MAX_PC = int(PC_search[1])
                     CUR_PC = int(PC_search[0])
         except Exception as E:
@@ -594,9 +592,7 @@ if __name__ == "__main__":
                     total_adaptive_search = total_adaptive_search + diff + 1
                     print("Making " + str(diff+1) + " additional searches!")
                     mobile_search(diff+1)
-                    report = advanced_progress()
-                    temp = processReport("Mobile search",report)
-                    Mobile_search = processLeaf("Mobile search",temp)
+                    PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities = finalReport()
                     MAX_MOBILE = int(Mobile_search[1])
                     CUR_MOBILE = int(Mobile_search[0])
         except Exception as E:
@@ -622,8 +618,6 @@ if __name__ == "__main__":
         MOBILE_SEARCH = "Failed"
 
     if(Microsoft_Edge_bonus != None):
-        temp = processReport("Microsoft Edge bonus",report)
-        Microsoft_Edge_bonus = processLeaf("Microsoft Edge bonus",temp)
         EdgeStat = Microsoft_Edge_bonus[0] + "/" + Microsoft_Edge_bonus[1]
     else:
         EdgeStat = "Failed"
