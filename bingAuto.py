@@ -208,86 +208,67 @@ def mobile_search(range1):
             chrome_options.add_argument("--log-level=3")
             driver = webdriver.Chrome(chrome_options = chrome_options)
             driver.get('http://bing.com')
-        except(KeyboardInterrupt, SystemExit):
-            raise
+            time.sleep(3)
+            seed = randomNum(size)
+            search_box = driver.find_element_by_name('q')
+            search_box.send_keys(keyWords[seed])
+            search_box.submit()
+            #pyautogui.typewrite(keyWords[seed] + '\n', interval=0.1)
+            counter += 1
+            
+            time.sleep(3)
+            try:
+                driver.switchTo().alert().dismiss();
+            except:
+                pass
+            driver.execute_script("window.scrollTo(0, 200)")
+            time.sleep(1.5)
+            try:
+                driver.switchTo().alert().dismiss();
+            except:
+                pass
+            driver.execute_script("window.scrollTo(0, 150)")
+            time.sleep(2)
+            try:
+                driver.switchTo().alert().dismiss();
+            except:
+                pass
+            driver.execute_script("window.scrollTo(0, 300)")
+            time.sleep(2)
+            try:
+                driver.switchTo().alert().dismiss();
+            except:
+                pass
+            driver.execute_script("window.scrollTo(0, 150)")
+            try:
+                driver.switchTo().alert().dismiss();
+            except:
+                pass
+            pyautogui.mouseDown(x=339, y=314, button='left')
+            pyautogui.mouseUp(x=339, y=314, button='left')
+            time.sleep(2)
+            pyautogui.mouseDown(x=339, y=314, button='left')
+            pyautogui.mouseUp(x=312, y=336, button='left')
+            time.sleep(3)
+            driver.quit()
+            temp2 = randint(3,5)
+            timeSpent = timeSpent + temp2
+            print('Mobile Searched '+ str(counter)+ ' out of ' + str(range1) + ': ' + str(keyWords[seed]))
+            print('Waiting for: '+ str(temp2) +' Seconds' )
+            time.sleep(temp2)
+            
+            print('Total Words Seached in This Mobile Session:' + str(counter))
+            
+            if(counter == 0):
+                timeSpent = 0
+            minutes = int(timeSpent/60)
+            seconds = timeSpent % 60
+            print('Total Time Spent is ' + str(minutes) + ' minute(s) ' + str(seconds) + " second(s).")   
+        #except(KeyboardInterrupt, SystemExit):
+        #    raise
         except Exception as E:
             notify("Mobile search failed with error "+ str(E))
-            print("open chrome failed, kiling application " + str(E))
-            os.system("KillChrome.bat")
-            #driver.quit()
-           
-            os.system("startChrome.bat")
-            time.sleep(5)
-            
-            os.system("KillChrome.bat")
-            
-            print("restarting search process")
-            mobile_emulation = {
-                "deviceMetrics": { "width": 360, "height": 640, "pixelRatio": 3.0 },
-                "userAgent": "Mozilla/5.0 (Linux; Android 4.2.1; en-us; Nexus 5 Build/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Mobile Safari/535.19" }
-            chrome_options = Options()
-            chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
-            chrome_options.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
-            chrome_options.add_argument(current_working_dir)
-            driver = webdriver.Chrome(chrome_options = chrome_options)
-            driver.get('http://bing.com')
-            
-        time.sleep(3)
-        seed = randomNum(size)
-        search_box = driver.find_element_by_name('q')
-        search_box.send_keys(keyWords[seed])
-        search_box.submit()
-        #pyautogui.typewrite(keyWords[seed] + '\n', interval=0.1)
-        counter += 1
-        
-        time.sleep(3)
-        try:
-            driver.switchTo().alert().dismiss();
-        except:
-            pass
-        driver.execute_script("window.scrollTo(0, 200)")
-        time.sleep(1.5)
-        try:
-            driver.switchTo().alert().dismiss();
-        except:
-            pass
-        driver.execute_script("window.scrollTo(0, 150)")
-        time.sleep(2)
-        try:
-            driver.switchTo().alert().dismiss();
-        except:
-            pass
-        driver.execute_script("window.scrollTo(0, 300)")
-        time.sleep(2)
-        try:
-            driver.switchTo().alert().dismiss();
-        except:
-            pass
-        driver.execute_script("window.scrollTo(0, 150)")
-        try:
-            driver.switchTo().alert().dismiss();
-        except:
-            pass
-        pyautogui.mouseDown(x=339, y=314, button='left')
-        pyautogui.mouseUp(x=339, y=314, button='left')
-        time.sleep(2)
-        pyautogui.mouseDown(x=339, y=314, button='left')
-        pyautogui.mouseUp(x=312, y=336, button='left')
-        time.sleep(3)
-        driver.quit()
-        temp2 = randint(3,5)
-        timeSpent = timeSpent + temp2
-        print('Mobile Searched '+ str(counter)+ ' out of ' + str(range1) + ': ' + str(keyWords[seed]))
-        print('Waiting for: '+ str(temp2) +' Seconds' )
-        time.sleep(temp2)
-        
-        print('Total Words Seached in This Mobile Session:' + str(counter))
-        
-        if(counter == 0):
-            timeSpent = 0
-        minutes = int(timeSpent/60)
-        seconds = timeSpent % 60
-        print('Total Time Spent is ' + str(minutes) + ' minute(s) ' + str(seconds) + " second(s).")       
+            driver.quit()    
     return counter
 
 #shutdown the machine
@@ -395,6 +376,7 @@ def advanced_progress():
         chrome_options1.add_argument(current_working_dir)
         driver1 = webdriver.Chrome(chrome_options = chrome_options1)
         driver1.get('https://account.microsoft.com/rewards/pointsbreakdown')
+        time.sleep(4)
         data =  driver1.find_elements_by_class_name("title-detail")
         timeout = 1
         while(data == None):
@@ -442,8 +424,70 @@ def processLeaf(var,leaf):
         return leaf[1].split(" / ")
     else:
         return None
-    
+def progressCheck(progress):
+    for item in progress:
+        if(isInt(item) == False):
+            return False
+
 if __name__ == "__main__":
+    #begins advanced report setup
+    PC_search = []
+    Mobile_search = []
+    Microsoft_Edge_bonus = []
+    Other_activities = []
+    report = advanced_progress()
+    advanced_available_points = ""
+    if(report != "failed"):
+        advanced_available_points = ""
+        temp = processReport("PC search",report)
+        if(temp != None):
+            PC_search = processLeaf("PC search",temp)
+        else:
+            PC_search = None
+        if(progressCheck(PC_search) == False):
+            PC_search = None
+           
+        temp = processReport("Mobile search",report)
+        if(temp != None):
+            Mobile_search = processLeaf("Mobile search",temp)
+        else:
+            Mobile_search = None  
+        if(progressCheck(Mobile_search) == False):
+            Mobile_search = None
+            
+        temp = processReport("Microsoft Edge bonus",report)
+        if(temp != None):
+            Microsoft_Edge_bonus = processLeaf("Microsoft Edge bonus",temp)
+        else:
+            Microsoft_Edge_bonus = None
+        if(progressCheck(Microsoft_Edge_bonus) == False):
+            Microsoft_Edge_bonus = None
+            
+        temp = processReport("Available points",report)
+        if(temp != None):
+            advanced_available_points = processLeaf("Available points",temp)
+        else:
+            advanced_available_points = None
+        if(isInt(advanced_available_points) == False):
+            advanced_available_points = None
+        else:
+            advanced_available_points = int(advanced_available_points)
+
+        temp = processReport("Other activities",report)
+        if(temp != None):
+            Other_activities = processLeaf("Other activities",temp)
+        else:
+            Other_activities = None
+        if(progressCheck(Other_activities) == False):
+            Other_activities = None
+        
+    else:
+        PC_search = None
+        Mobile_search = None
+        Microsoft_Edge_bonus = None
+        advanced_available_points = None
+        Other_activities = None
+    
     total_legacy_search = 0
     total_adaptive_search = 0
     time1 = datetime.datetime.now()
@@ -464,61 +508,125 @@ if __name__ == "__main__":
     keyWords = keywords()
     size = len(keyWords)
     print('Initialize Human Like Search Sequence:')
-    presearch_credits = get_credits()
+    #get presearch credits
+    if(advanced_available_points == None):
+        presearch_credits = get_credits()
+    else:
+        presearch_credits = advanced_available_points
     postsearch_credits = 0
     gain = 0
     get_credit_failed = False
     if(isInt(presearch_credits) == False):
         get_credit_failed = True
     
-    #check for pc search stat
-    PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
-    if(PC_SEARCH != "failed"):
-        MAX_PC = int(PC_SEARCH.split("/")[1])
-        CUR_PC = int(PC_SEARCH.split("/")[0])
-        while(CUR_PC < MAX_PC):
-            print("Current PC Search Progress: "+ str(PC_SEARCH))
-            diff = int((MAX_PC - CUR_PC)/5)
-            total_adaptive_search = total_adaptive_search + diff + 1
-            print("Making " + str(diff+1) + " additional searches!")
-            search(diff+1)
-            PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
+    if(PC_search == None):
+        #check for pc search stat
+        PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
+        if(PC_SEARCH != "failed"):
             MAX_PC = int(PC_SEARCH.split("/")[1])
             CUR_PC = int(PC_SEARCH.split("/")[0])
+            while(CUR_PC < MAX_PC):
+                print("Current PC Search Progress: "+ str(PC_SEARCH))
+                diff = int((MAX_PC - CUR_PC)/5)
+                total_adaptive_search = total_adaptive_search + diff + 1
+                print("Making " + str(diff+1) + " additional searches!")
+                search(diff+1)
+                PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
+                MAX_PC = int(PC_SEARCH.split("/")[1])
+                CUR_PC = int(PC_SEARCH.split("/")[0])
+        else:
+            #legacy search if adaptive search failed
+            notify("PC adaptive search failed, begins legacy search with " + str(PCSeach) + " searches.")
+            total_legacy_search = PCSeach + total_legacy_search
+            search(PCSeach)
     else:
-        #legacy search if adaptive search failed
-        notify("PC adaptive search failed, begins legacy search with " + str(PCSeach) + " searches.")
-        total_legacy_search = PCSeach + total_legacy_search
-        search(PCSeach)
-    
-    #check for mobile search stat
-    PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
-    if(MOBILE_SEARCH != "failed"):
-        MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
-        CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
+        try:
+            #do adaptive search with advanced progress
+            MAX_PC = int(PC_search[1])
+            CUR_PC = int(PC_search[0])
+            while(CUR_PC < MAX_PC):
+                    print("Current PC Search Progress: "+ str(CUR_PC))
+                    diff = int((MAX_PC - CUR_PC)/5)
+                    total_adaptive_search = total_adaptive_search + diff + 1
+                    print("Making " + str(diff+1) + " additional searches!")
+                    search(diff+1)
+                    temp = processReport("PC search",report)
+                    PC_search = processLeaf("PC search",temp)
+                    MAX_PC = int(PC_search[1])
+                    CUR_PC = int(PC_search[0])
+        except Exception as E:
+            print("Adaptive PC search with advanced report failed with error: " + str(E))
+            notify("PC adaptive search failed, begins legacy search with " + str(PCSeach) + " searches.")
+            total_legacy_search = PCSeach + total_legacy_search
+            search(PCSeach)
 
-        while(CUR_MOBILE < MAX_MOBILE):
-            print("Current Mobile Search Progress: "+ str(MOBILE_SEARCH))
-            diff = int((MAX_MOBILE - CUR_MOBILE)/5)
-            total_adaptive_search = total_adaptive_search + diff + 1
-            print("Making " + str(diff+1) + " additional searches!")
-            mobile_search(diff+1)
-            PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
+    if(Mobile_search == None):
+        #check for mobile search stat
+        PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
+        if(MOBILE_SEARCH != "failed"):
             MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
             CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
-    else:
-        #legacy search if adaptive search failed
-        notify("Mobile adaptive search failed, begins legacy search with " + str(MobileSearch) + " searches.")
-        total_legacy_search = MobileSearch + total_legacy_search
-        mobile_search(MobileSearch)
-        
 
+            while(CUR_MOBILE < MAX_MOBILE):
+                print("Current Mobile Search Progress: "+ str(MOBILE_SEARCH))
+                diff = int((MAX_MOBILE - CUR_MOBILE)/5)
+                total_adaptive_search = total_adaptive_search + diff + 1
+                print("Making " + str(diff+1) + " additional searches!")
+                mobile_search(diff+1)
+                PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
+                MAX_MOBILE = int(MOBILE_SEARCH.split("/")[1])
+                CUR_MOBILE = int(MOBILE_SEARCH.split("/")[0])
+        else:
+            #legacy search if adaptive search failed
+            notify("Mobile adaptive search failed, begins legacy search with " + str(MobileSearch) + " searches.")
+            total_legacy_search = MobileSearch + total_legacy_search
+            mobile_search(MobileSearch)
+    else:
+        #do adaptive search with advanced progress
+        try:
+            #do adaptive search with advanced progress
+            MAX_MOBILE = int(Mobile_search[1])
+            CUR_MOBILE = int(Mobile_search[0])
+            while(CUR_MOBILE < MAX_MOBILE):
+                    print("Current Mobile Search Progress: "+ str(CUR_MOBILE))
+                    diff = int((MAX_MOBILE - CUR_MOBILE)/5)
+                    total_adaptive_search = total_adaptive_search + diff + 1
+                    print("Making " + str(diff+1) + " additional searches!")
+                    mobile_search(diff+1)
+                    temp = processReport("Mobile search",report)
+                    Mobile_search = processLeaf("Mobile search",temp)
+                    MAX_MOBILE = int(Mobile_search[1])
+                    CUR_MOBILE = int(Mobile_search[0])
+        except Exception as E:
+            print("Adaptive Mobile search with advanced report failed with error: " + str(E))
+            notify("Mobile adaptive search failed, begins legacy search with " + str(MobileSearch) + " searches.")
+            total_legacy_search = MobileSearch + total_legacy_search
+            mobile_search(MobileSearch)
+    
     if(get_credit_failed == False):
         postsearch_credits = get_credits()
         gain = postsearch_credits - presearch_credits
     else:
         postsearch_credits = "Failed to get credits"
         gain = "Failed to get credits"
+    if(PC_search != None):
+        PC_SEARCH = PC_search[0] + "/"+ PC_search[1]
+    else:
+        PC_SEARCH = "Failed"
+
+    if(Mobile_search != None):
+        MOBILE_SEARCH = Mobile_search[0] + "/" + Mobile_search[1]
+    else:
+        MOBILE_SEARCH = "Failed"
+
+    if(Microsoft_Edge_bonus != None):
+        EdgeStat = Microsoft_Edge_bonus[0] + "/" + Microsoft_Edge_bonus[1]
+    else:
+        EdgeStat = "Failed"
+    if(Other_activities != None):
+        others = Other_activities[0] + "/" + Other_activities[1]
+    else:
+        others = "Failed"
     time2 = datetime.datetime.now()
     timeDiff = time2 - time1
     user, pwd = getAccount()
@@ -534,7 +642,12 @@ if __name__ == "__main__":
         send_email(user, pwd, Report, subject, body)
     else:
         subject = Account + ' on '+ Host + ' ' + VM +' gained: ' + str(gain) + ' credits.'
-        body = (Account +' currently has: ' + str(postsearch_credits)) + ' credits!' + "\n" +"Total time spent: " + str(timeDiff)[:10] + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " + MOBILE_SEARCH + "\n" + "Total adaptive searches done: " + str(total_adaptive_search)+ "\n"+ "Total legacy seaches done: "+ str(total_legacy_search)+ "\n" +fortune()
+        body = ((Account +' currently has: ' + str(postsearch_credits)) + ' credits!' + "\n" +
+                "Total time spent: " + str(timeDiff)[:10]
+                + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " +
+                MOBILE_SEARCH + "\n" + "Edge Bonus: "+ str(EdgeStat)+ "\n"+ "Other activities: "+ others + "\n" +
+                "Total adaptive searches done: " + str(total_adaptive_search)+ "\n"+
+                "Total legacy seaches done: "+ str(total_legacy_search)+ "\n" +fortune())
         send_email(user, pwd, Report, subject, body)
 
     shutdown(Shutdown)
