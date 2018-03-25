@@ -463,17 +463,91 @@ def finalReport():
             Other_activities = None
         if(progressCheck(Other_activities) == False):
             Other_activities = None
-        
+        temp = processReport("Streak count",report)
+        if(temp != None):
+            Streak_count = processLeaf("Streak count",temp)
+        else:
+            Streak_count = None
     else:
         PC_search = None
         Mobile_search = None
         Microsoft_Edge_bonus = None
         advanced_available_points = None
         Other_activities = None
-    return PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities
+        Streak_count = None
+    return PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities,Streak_count
+
+def complete_streak():
+    try:
+        report = []
+        chrome_options1 = Options()
+        chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
+        chrome_options1.add_argument(current_working_dir)
+        driver1 = webdriver.Chrome(chrome_options = chrome_options1)
+        driver1.get('https://account.microsoft.com/rewards/')
+        time.sleep(4)
+        #class = mosaic-content include all other activities 
+        data =  driver1.find_elements_by_class_name("rewards-card")
+        timeout = 1
+        while(data == None):
+            print("Failed to get progress - retrying up to 20 times!")
+            print("Try: " + str(timeout))
+            time.sleep(1)
+            timeout = timeout + 1 
+            data =  driver1.find_elements_by_class_name("rewards-card")
+            if((timeout == 20) and (data == None)):
+                driver1.quit()
+                return "failed"
+                break
+        time.sleep(1)
+        for item in data:
+            if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" not in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
+                item.click()
+                time.sleep(2)
+        driver1.quit()
+        return "ok"
+    except Exception as E:
+        print("failed to complete streak cards with errors: " + str(E))
+        driver1.quit()
+        return "failed"
+
+def cards_clicker():
+    try:
+        report = []
+        chrome_options1 = Options()
+        chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
+        chrome_options1.add_argument(current_working_dir)
+        driver1 = webdriver.Chrome(chrome_options = chrome_options1)
+        driver1.get('https://account.microsoft.com/rewards/')
+        time.sleep(4)
+        #class = mosaic-content include all other activities 
+        data =  driver1.find_elements_by_class_name("mosaic-content")
+        timeout = 1
+        while(data == None):
+            print("Failed to get progress - retrying up to 20 times!")
+            print("Try: " + str(timeout))
+            time.sleep(1)
+            timeout = timeout + 1 
+            data =  driver1.find_elements_by_class_name("mosaic-content")
+            if((timeout == 20) and (data == None)):
+                driver1.quit()
+                return "failed"
+                break
+        time.sleep(1)
+        for item in data:
+            if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" not in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
+                item.click()
+                time.sleep(2)
+        driver1.quit()
+        return "ok"
+    except Exception as E:
+        print("failed to complete streak cards with errors: " + str(E))
+        driver1.quit()
+        return "failed"
+    
 if __name__ == "__main__":
     time1 = datetime.datetime.now()
-    PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities = finalReport()
+    PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities,Streak_count = finalReport()
     total_legacy_search = 0
     total_adaptive_search = 0
     profile = get_profile()
@@ -503,7 +577,14 @@ if __name__ == "__main__":
     get_credit_failed = False
     if(isInt(presearch_credits) == False):
         get_credit_failed = True
-    
+    #clicks available cards if points are available
+    if(Other_activities != None and (int(Other_activities[1]) > int(Other_activities[0]))):
+        print("Clicking other activities cards")
+        print(cards_clicker())
+        time.sleep(1)
+        print("Clicking streak cards")
+        print(complete_streak())
+    #Begins Primary Searches
     if(PC_search == None):
         #check for pc search stat
         PC_SEARCH,MOBILE_SEARCH = get_progress_legacy()
@@ -535,7 +616,7 @@ if __name__ == "__main__":
                     total_adaptive_search = total_adaptive_search + diff + 1
                     print("Making " + str(diff+1) + " additional searches!")
                     search(diff+1)
-                    PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities = finalReport()
+                    PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities,Streak_count = finalReport()
                     MAX_PC = int(PC_search[1])
                     CUR_PC = int(PC_search[0])
         except Exception as E:
@@ -577,7 +658,7 @@ if __name__ == "__main__":
                     total_adaptive_search = total_adaptive_search + diff + 1
                     print("Making " + str(diff+1) + " additional searches!")
                     mobile_search(diff+1)
-                    PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities = finalReport()
+                    PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities,Streak_count = finalReport()
                     MAX_MOBILE = int(Mobile_search[1])
                     CUR_MOBILE = int(Mobile_search[0])
         except Exception as E:
@@ -588,7 +669,7 @@ if __name__ == "__main__":
     
     if(get_credit_failed == False):
         postsearch_credits = get_credits()
-        gain = postsearch_credits - presearch_credits
+        gain = int(postsearch_credits) - int(presearch_credits)
     else:
         postsearch_credits = "Failed to get credits"
         gain = "Failed to get credits"
@@ -610,6 +691,10 @@ if __name__ == "__main__":
         others = Other_activities[0] + "/" + Other_activities[1]
     else:
         others = "Failed"
+    if(Streak_count != None):
+        streak = Streak_count
+    else:
+        streak = "Failed"
     time2 = datetime.datetime.now()
     timeDiff = time2 - time1
     user, pwd = getAccount()
@@ -628,7 +713,7 @@ if __name__ == "__main__":
         body = ((Account +' currently has: ' + str(postsearch_credits)) + ' credits!' + "\n" +
                 "Total time spent: " + str(timeDiff)[:10]
                 + "\n" + "PC Progress: " + PC_SEARCH + "\n" + "Mobile Progress: " +
-                MOBILE_SEARCH + "\n" + "Edge Bonus: "+ str(EdgeStat)+ "\n"+ "Other activities: "+ others + "\n" +
+                MOBILE_SEARCH + "\n" + "Edge Bonus: "+ str(EdgeStat)+ "\n"+ "Other activities: "+ others + "\n" + "Streaks count: "+ streak+ "\n" +
                 "Total adaptive searches done: " + str(total_adaptive_search)+ "\n"+
                 "Total legacy seaches done: "+ str(total_legacy_search)+ "\n" +fortune())
         send_email(user, pwd, Report, subject, body)
