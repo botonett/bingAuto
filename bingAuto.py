@@ -544,6 +544,50 @@ def cards_clicker():
         print("failed to complete streak cards with errors: " + str(E))
         driver1.quit()
         return "failed"
+def quiz_total():
+    try:
+        report = []
+        completed = []
+        total_quiz_points = 0
+        quiz_points_completed = 0
+        chrome_options1 = Options()
+        chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
+        chrome_options1.add_argument(current_working_dir)
+        driver1 = webdriver.Chrome(chrome_options = chrome_options1)
+        driver1.get('https://account.microsoft.com/rewards/')
+        time.sleep(4)
+        #class = mosaic-content include all other activities 
+        data =  driver1.find_elements_by_class_name("mosaic-content")
+        timeout = 1
+        while(data == None):
+            print("Failed to get progress - retrying up to 20 times!")
+            print("Try: " + str(timeout))
+            time.sleep(1)
+            timeout = timeout + 1 
+            data =  driver1.find_elements_by_class_name("mosaic-content")
+            if((timeout == 20) and (data == None)):
+                driver1.quit()
+                return "failed","failed"
+                break
+        time.sleep(1)
+        for item in data:
+            if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
+                #print(item.text.split("\n"))
+                report.append(item.text.split("\n"))
+                if("You did it!" in item.text):
+                    completed.append(item.text.split("\n"))
+        driver1.quit()
+        for quiz in report:
+            total_quiz_points = int(quiz[0]) + total_quiz_points
+        #print("Total Quiz Points Available: " + str(total_quiz_points))
+        for quiz in completed:
+            quiz_points_completed = int(quiz[0]) + quiz_points_completed
+        #print("Total Quiz Points Completed: " + str(quiz_points_completed))
+        return quiz_points_completed,total_quiz_points
+    except Exception as E:
+        print("Failed to get quizzes credits with error: " + str(E))
+        driver1.quit()
+        return "failed","failed"
     
 if __name__ == "__main__":
     time1 = datetime.datetime.now()
@@ -577,13 +621,26 @@ if __name__ == "__main__":
     get_credit_failed = False
     if(isInt(presearch_credits) == False):
         get_credit_failed = True
+
+    quiz_points_completed,total_quiz_points = quiz_total()
+    if(total_quiz_points == "failed"):
+        total_quiz_points = 0
+        quiz_points_completed = 0
+        print("Failed to get quiz points")
+    elif(quiz_points_completed < total_quiz_points):
+        pass
+        #need to implement complete quizzes feature
+
+
     #clicks available cards if points are available
-    if(Other_activities != None and (int(Other_activities[1]) > int(Other_activities[0]))):
-        print("Clicking other activities cards")
-        print(cards_clicker())
-        time.sleep(1)
+    if(Other_activities != None and (int(Other_activities[1])- total_quiz_points > int(Other_activities[0]))):
         print("Clicking streak cards")
         print(complete_streak())
+        time.sleep(1)
+        print("Clicking other activities cards")
+        print(cards_clicker())
+        
+        
     #Begins Primary Searches
     if(PC_search == None):
         #check for pc search stat
