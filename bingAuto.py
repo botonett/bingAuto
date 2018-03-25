@@ -666,8 +666,11 @@ if __name__ == "__main__":
             notify("Mobile adaptive search failed, begins legacy search with " + str(MobileSearch) + " searches.")
             total_legacy_search = MobileSearch + total_legacy_search
             mobile_search(MobileSearch)
-    
-    if(get_credit_failed == False):
+    PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities,Streak_count = finalReport()
+    if(advanced_available_points != None):
+        postsearch_credits = advanced_available_points
+        gain = int(postsearch_credits) - int(presearch_credits)
+    elif(get_credit_failed == False):
         postsearch_credits = get_credits()
         gain = int(postsearch_credits) - int(presearch_credits)
     else:
