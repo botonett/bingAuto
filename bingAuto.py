@@ -501,7 +501,7 @@ def complete_streak():
                 break
         time.sleep(1)
         for item in data:
-            if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" not in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
+            if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" not in item.text) and("quiz" not in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
                 item.click()
                 time.sleep(2)
         driver1.quit()
