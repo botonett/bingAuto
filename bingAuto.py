@@ -633,7 +633,7 @@ if __name__ == "__main__":
 
 
     #clicks available cards if points are available
-    if(Other_activities != None and (int(Other_activities[1])- total_quiz_points > int(Other_activities[0]))):
+    if(Other_activities != None and (int(Other_activities[0]) > int(Other_activities[1])- total_quiz_points)):
         print("Clicking streak cards")
         print(complete_streak())
         time.sleep(1)
