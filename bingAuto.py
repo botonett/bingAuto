@@ -578,9 +578,14 @@ def quiz_total():
                 return "failed","failed"
                 break
         time.sleep(1)
+        Warpspeed_done = False
         for item in data:
             if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
                 #print(item.text.split("\n"))
+                if("Warpspeed Quiz" in item.text):
+                    if("You did it!" in item.text):
+                        Warpspeed_done = True
+                        
                 report.append(item.text.split("\n"))
                 if("You did it!" in item.text):
                     completed.append(item.text.split("\n"))
@@ -591,7 +596,7 @@ def quiz_total():
         for quiz in completed:
             quiz_points_completed = int(quiz[0]) + quiz_points_completed
         #print("Total Quiz Points Completed: " + str(quiz_points_completed))
-        return quiz_points_completed,total_quiz_points
+        return quiz_points_completed,total_quiz_points,Warpspeed_done
     except Exception as E:
         print("Failed to get quizzes credits with error: " + str(E))
         driver1.quit()
@@ -818,19 +823,22 @@ if __name__ == "__main__":
     if(isInt(presearch_credits) == False):
         get_credit_failed = True
 
-    quiz_points_completed,total_quiz_points = quiz_total()
+    quiz_points_completed,total_quiz_points,Warpspeed_done = quiz_total()
     if(total_quiz_points == "failed"):
         total_quiz_points = 0
         quiz_points_completed = 0
+        Warpspeed_done = False
         print("Failed to get quiz points")
         print("Attempting to try quiz taker anyways")
         print(quiz_taker())
     elif(quiz_points_completed < total_quiz_points):
         print(quiz_taker())
-
-
+    if(Warpspeed_done == False):
+        other_diff = 50
+    else:
+        other_diff = 0
     #clicks available cards if points are available
-    if(Other_activities != None and (int(Other_activities[0]) < int(Other_activities[1])- total_quiz_points)):
+    if(Other_activities != None and (int(Other_activities[0]) < int(Other_activities[1])- other_diff)):
         print("Clicking streak cards")
         print(complete_streak())
         time.sleep(1)
