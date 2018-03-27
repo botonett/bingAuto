@@ -588,7 +588,195 @@ def quiz_total():
         print("Failed to get quizzes credits with error: " + str(E))
         driver1.quit()
         return "failed","failed"
-    
+def quiz_taker():
+    try:        
+        quiz_to_do = []
+        chrome_options1 = Options()
+        chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
+        chrome_options1.add_argument(current_working_dir)
+        driver1 = webdriver.Chrome(chrome_options = chrome_options1)
+        driver1.get('https://account.microsoft.com/rewards/')
+        time.sleep(2)
+        #class = mosaic-content include all other activities 
+        streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+        other_quiz = driver1.find_elements_by_class_name("mosaic-content")
+        timeout = 1
+        while(streak_quiz == None):
+            print("Failed to get progress - retrying up to 20 times!")
+            print("Try: " + str(timeout))
+            time.sleep(1)
+            timeout = timeout + 1 
+            streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+            if((timeout == 20) and (streak_quiz == None)):
+                print("failed to find quizzes")
+                driver1.quit()
+                return "failed"
+                break
+        timeout = 1
+        while(other_quiz == None):
+            print("Failed to get progress - retrying up to 20 times!")
+            print("Try: " + str(timeout))
+            time.sleep(1)
+            timeout = timeout + 1 
+            other_quiz =  driver1.find_elements_by_class_name("mosaic-content")
+            if((timeout == 20) and (other_quiz == None)):
+                print("failed to find quizzes")
+                driver1.quit()
+                return "failed"
+                break
+        time.sleep(1)
+        print("Found quizzes, selecting incompleted multiple choices quizzes")
+        #get all quizzes
+        for item in streak_quiz:
+            if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
+                #get all incompleted quiz and not warpspeed quiz
+                if(("You did it!" not in item.text) and ("Warpspeed Quiz" not in item.text)):
+                    quiz_to_do.append(item)
+                if("Warpspeed Quiz" not in item.text):
+                    print("send mail to let user know there is a Warpspeed Quiz in streak!")
+                    notify("There a Warpspeed Quiz that is preventing bingAuto to completing your streak!")
+        for item in other_quiz:
+            if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
+                #get all incompleted quiz and not warpspeed quiz
+                if(("You did it!" not in item.text) and ("Warpspeed Quiz" not in item.text)):
+                    quiz_to_do.append(item)
+        if(len(quiz_to_do) > 0):
+            print("Found incompleted multiple choices quizzes, commencing multiple choice quiz taker: " + str(len(quiz_to_do)) + " Quizzes")
+        else:
+            print("All multiple choice quizzes have been completed!")
+            driver1.quit()
+
+        #current quiz window
+        counter = 1
+        #begins quiz taker
+        for quiz in quiz_to_do:
+            #find number of question in the quiz
+            #print("Attemping: " + quiz.text.split("\n")[0])
+            try:
+                questions = int(int(quiz.text.split("\n")[2])/10)
+            except Exception as E:
+                print("attemp to get number of questions in quiz failed with error: " + str(E))
+                print("Setting default number of questions per quiz to 3")
+                questions = 3 #default is 3 questions
+            #begins the quiz
+            quiz.click()
+            time.sleep(1)
+            #print("before window handle")
+            driver1.switch_to.window(driver1.window_handles[counter])
+            #print("after window handle")
+            time.sleep(1)
+            #answering questions
+            while(questions > 0):
+                #start the quiz
+                try:
+                    start = driver1.find_element_by_class_name("rqAction")
+                    if(start != None):
+                        start.click()
+                    time.sleep(1)
+                except:
+                    pass
+                #question 1
+                next_question = False
+                #if the first thing you see is this then get out
+                try:
+                    timeout = 5
+                    try:
+                        end = driver1.find_element_by_class_name("headerMessage")
+                        if(end.text == "Way to go!"):
+                            break
+                    except:
+                        pass
+                    time.sleep(1)
+                    #looking for answer
+                    a = driver1.find_element_by_id("rqAnswerOption0")
+                    b = driver1.find_element_by_id("rqAnswerOption1")
+                    c = driver1.find_element_by_id("rqAnswerOption2")
+                    d = driver1.find_element_by_id("rqAnswerOption3")
+                    while(a == None or b == None or c == None or d == None):
+                        if(timeout < 0):
+                            break
+                        else:
+                            timeout -= 1
+                        time.sleep(1)
+                        a = driver1.find_element_by_id("rqAnswerOption0")
+                        b = driver1.find_element_by_id("rqAnswerOption1")
+                        c = driver1.find_element_by_id("rqAnswerOption2")
+                        d = driver1.find_element_by_id("rqAnswerOption3")
+                    if(timeout < 0):
+                        print("Can't find any answer, skipping this quiz...")
+                        break
+                    answer = [a,b,c,d]
+                    tried = []
+                    guess = 3
+
+                    #first attemp given outside of loop
+                    choice = randint(0,3)
+                    while(choice in tried):
+                        choice = randint(0,3)
+                    tried.append(choice)
+                    
+                    #answer 1
+                    answer[choice].click()
+                    time.sleep(1.2)
+                    try:
+                        nextq = driver1.find_element_by_class_name("headerMessage")
+                        if(nextq.text == "You got it right!"):
+                            next_question = True
+                            time.sleep(.4)
+                    except:
+                        pass
+                    #the remaining 3 attemps will be done in loop
+                    while(guess > 0):
+                        #print(guess)
+                        #looking for answer
+                        a = driver1.find_element_by_id("rqAnswerOption0")
+                        b = driver1.find_element_by_id("rqAnswerOption1")
+                        c = driver1.find_element_by_id("rqAnswerOption2")
+                        d = driver1.find_element_by_id("rqAnswerOption3")
+                        while(a == None or b == None or c == None or d == None):
+                            if(timeout < 0):
+                                break
+                            else:
+                                timeout -= 1
+                            time.sleep(1)
+                            a = driver1.find_element_by_id("rqAnswerOption0")
+                            b = driver1.find_element_by_id("rqAnswerOption1")
+                            c = driver1.find_element_by_id("rqAnswerOption2")
+                            d = driver1.find_element_by_id("rqAnswerOption3")
+                        if(timeout < 0):
+                            print("Can't find any answer, skipping this quiz...")
+                            break
+                        answer = [a,b,c,d]
+                        choice = randint(0,3)
+                        while(choice in tried):
+                            choice = randint(0,3)
+                        tried.append(choice)
+                        if(next_question == False):
+                            answer[choice].click()
+                            time.sleep(1.2)
+                            try:
+                                nextq = driver1.find_element_by_class_name("headerMessage")
+                                if(end.text == "You got it right!"):
+                                    next_question = True
+                                    time.sleep(.4)
+                            except Exception as E:
+                                #print(str(E))
+                                pass
+                        guess -= 1
+                except:
+                    pass
+                    questions -= 1
+            counter += 1
+            #go back to main windows to begins next quiz
+            driver1.switch_to.window(driver1.window_handles[0])
+            time.sleep(1)
+        driver1.quit()
+        print("All multiple choice quizzes completed successfully!")
+        return "ok"
+    except Exception as E:
+        print("Failed do quizzes with error: " + str(E))
+        driver1.quit()
+        return "failed"
 if __name__ == "__main__":
     time1 = datetime.datetime.now()
     PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities,Streak_count = finalReport()
@@ -627,13 +815,14 @@ if __name__ == "__main__":
         total_quiz_points = 0
         quiz_points_completed = 0
         print("Failed to get quiz points")
+        print("Attempting to try quiz taker anyways")
+        print(quiz_taker())
     elif(quiz_points_completed < total_quiz_points):
-        pass
-        #need to implement complete quizzes feature
+        print(quiz_taker())
 
 
     #clicks available cards if points are available
-    if(Other_activities != None and (int(Other_activities[0]) > int(Other_activities[1])- total_quiz_points)):
+    if(Other_activities != None and (int(Other_activities[0]) < int(Other_activities[1])- total_quiz_points)):
         print("Clicking streak cards")
         print(complete_streak())
         time.sleep(1)
