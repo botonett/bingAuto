@@ -394,7 +394,7 @@ def processReport(var,report):
 
 def processLeaf(var,leaf):
     if(var == "Available points"):
-        return leaf[0]
+        return leaf[0].replace(",","")
     elif(var == "Streak count"):
         return leaf[0]
     elif(var == "Microsoft Edge bonus"):
@@ -406,6 +406,8 @@ def processLeaf(var,leaf):
     elif(var == "Shop & earn"):
         return leaf[1]
     elif(var == "Other activities"):
+        return leaf[1].split(" / ")
+    elif(var == "Daily search"):
         return leaf[1].split(" / ")
     else:
         return None
@@ -423,16 +425,21 @@ def finalReport():
     advanced_available_points = ""
     if(report != "failed"):
         temp = processReport("PC search",report)
+        temp2 = processReport("Daily search",report)
         if(temp != None):
             PC_search = processLeaf("PC search",temp)
+        elif(temp2 != None):
+            PC_search = processLeaf("Daily search",temp2)
         else:
             PC_search = None
         if(progressCheck(PC_search) == False):
             PC_search = None
-           
+        
         temp = processReport("Mobile search",report)
         if(temp != None):
             Mobile_search = processLeaf("Mobile search",temp)
+        elif(temp2 != None):
+            Mobile_search = ['0','0']
         else:
             Mobile_search = None  
         if(progressCheck(Mobile_search) == False):
@@ -536,6 +543,7 @@ def cards_clicker():
         time.sleep(1)
         for item in data:
             if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" not in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
+
                 item.click()
                 time.sleep(2)
         driver1.quit()
@@ -632,7 +640,7 @@ def quiz_taker():
                 #get all incompleted quiz and not warpspeed quiz
                 if(("You did it!" not in item.text) and ("Warpspeed Quiz" not in item.text)):
                     quiz_to_do.append(item)
-                if("Warpspeed Quiz" not in item.text):
+                if("Warpspeed Quiz" in item.text):
                     print("send mail to let user know there is a Warpspeed Quiz in streak!")
                     notify("There a Warpspeed Quiz that is preventing bingAuto to completing your streak!")
         for item in other_quiz:
