@@ -760,12 +760,12 @@ def quiz_taker():
                     
                     #answer 1
                     answer[choice].click()
-                    time.sleep(1.2)
+                    time.sleep(2)
                     try:
                         nextq = driver1.find_element_by_class_name("headerMessage")
                         if(nextq.text == "You got it right!"):
                             next_question = True
-                            time.sleep(.4)
+                            time.sleep(1)
                     except:
                         pass
                     #the remaining 3 attemps will be done in loop
@@ -796,12 +796,12 @@ def quiz_taker():
                         tried.append(choice)
                         if(next_question == False):
                             answer[choice].click()
-                            time.sleep(1.2)
+                            time.sleep(2)
                             try:
                                 nextq = driver1.find_element_by_class_name("headerMessage")
                                 if(end.text == "You got it right!"):
                                     next_question = True
-                                    time.sleep(.4)
+                                    time.sleep(1)
                             except Exception as E:
                                 #print(str(E))
                                 pass
