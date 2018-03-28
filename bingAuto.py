@@ -552,6 +552,11 @@ def cards_clicker():
         print("failed to complete streak cards with errors: " + str(E))
         driver1.quit()
         return "failed"
+def get_quiz_point(quiz_cell):
+    for item in quiz_cell:
+        if("POINTS" in item):
+            return int(item.split(" ")[0])
+    return 0
 def quiz_total():
     try:
         report = []
@@ -564,8 +569,21 @@ def quiz_total():
         driver1 = webdriver.Chrome(chrome_options = chrome_options1)
         driver1.get('https://account.microsoft.com/rewards/')
         time.sleep(4)
-        #class = mosaic-content include all other activities 
+        #class = mosaic-content include all other activities
+        streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
         data =  driver1.find_elements_by_class_name("mosaic-content")
+        timeout = 1
+        while(streak_quiz == None):
+            print("Failed to get progress - retrying up to 20 times!")
+            print("Try: " + str(timeout))
+            time.sleep(1)
+            timeout = timeout + 1 
+            streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+            if((timeout == 20) and (streak_quiz == None)):
+                print("failed to find quizzes")
+                driver1.quit()
+                return "failed","failed",False
+                break
         timeout = 1
         while(data == None):
             print("Failed to get progress - retrying up to 20 times!")
@@ -575,7 +593,7 @@ def quiz_total():
             data =  driver1.find_elements_by_class_name("mosaic-content")
             if((timeout == 20) and (data == None)):
                 driver1.quit()
-                return "failed","failed"
+                return "failed","failed",False
                 break
         time.sleep(1)
         Warpspeed_done = False
@@ -585,14 +603,26 @@ def quiz_total():
                 if("Warpspeed Quiz" in item.text):
                     if("You did it!" in item.text):
                         Warpspeed_done = True
-                        
-                report.append(item.text.split("\n"))
+                quiz_cell = item.text.split("\n")
+                total_quiz_points = get_quiz_point(quiz_cell) + total_quiz_points
                 if("You did it!" in item.text):
-                    completed.append(item.text.split("\n"))
+                    quiz_cell = item.text.split("\n")
+                    quiz_points_completed = get_quiz_point(quiz_cell) + quiz_points_completed
+        
+        for item in streak_quiz:
+            if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
+                if("Warpspeed Quiz" in item.text):
+                    if("You did it!" in item.text):
+                        Warpspeed_done = True
+                quiz_cell = item.text.split("\n")
+                total_quiz_points = get_quiz_point(quiz_cell) + total_quiz_points
+                if("You did it!" in item.text):
+                    quiz_cell = item.text.split("\n")
+                    quiz_points_completed = get_quiz_point(quiz_cell) + quiz_points_completed
         driver1.quit()
-        for quiz in report:
-            total_quiz_points = int(quiz[0]) + total_quiz_points
+        
         #print("Total Quiz Points Available: " + str(total_quiz_points))
+        #['50', 'Warpspeed Quiz', 'You did it! You answered the questions and earned 50 points.', '50 POINTS']
         for quiz in completed:
             quiz_points_completed = int(quiz[0]) + quiz_points_completed
         #print("Total Quiz Points Completed: " + str(quiz_points_completed))
@@ -600,7 +630,7 @@ def quiz_total():
     except Exception as E:
         print("Failed to get quizzes credits with error: " + str(E))
         driver1.quit()
-        return "failed","failed"
+        return "failed","failed",False
 def quiz_taker():
     try:        
         quiz_to_do = []
@@ -838,6 +868,7 @@ if __name__ == "__main__":
     else:
         other_diff = 0
     #clicks available cards if points are available
+    PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities,Streak_count = finalReport()
     if(Other_activities != None and (int(Other_activities[0]) < int(Other_activities[1])- other_diff)):
         print("Clicking streak cards")
         print(complete_streak())
