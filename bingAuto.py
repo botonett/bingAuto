@@ -760,12 +760,12 @@ def quiz_taker():
                     
                     #answer 1
                     answer[choice].click()
-                    time.sleep(2)
+                    time.sleep(1.2)
                     try:
                         nextq = driver1.find_element_by_class_name("headerMessage")
                         if(nextq.text == "You got it right!"):
                             next_question = True
-                            time.sleep(1)
+                            time.sleep(.4)
                     except:
                         pass
                     #the remaining 3 attemps will be done in loop
@@ -796,12 +796,12 @@ def quiz_taker():
                         tried.append(choice)
                         if(next_question == False):
                             answer[choice].click()
-                            time.sleep(2)
+                            time.sleep(1.2)
                             try:
                                 nextq = driver1.find_element_by_class_name("headerMessage")
                                 if(end.text == "You got it right!"):
                                     next_question = True
-                                    time.sleep(1)
+                                    time.sleep(.4)
                             except Exception as E:
                                 #print(str(E))
                                 pass
@@ -873,8 +873,10 @@ if __name__ == "__main__":
         print("Clicking streak cards")
         print(complete_streak())
         time.sleep(1)
-        print("Clicking other activities cards")
-        print(cards_clicker())
+        PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities,Streak_count = finalReport()
+        if(Other_activities != None and (int(Other_activities[0]) < int(Other_activities[1])- other_diff)):
+            print("Clicking other activities cards")
+            print(cards_clicker())
         
         
     #Begins Primary Searches
