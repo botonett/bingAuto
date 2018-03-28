@@ -760,7 +760,7 @@ def quiz_taker():
                     
                     #answer 1
                     answer[choice].click()
-                     time.sleep(2)
+                    time.sleep(2)
                     try:
                         nextq = driver1.find_element_by_class_name("headerMessage")
                         if(nextq.text == "You got it right!"):
@@ -796,7 +796,7 @@ def quiz_taker():
                         tried.append(choice)
                         if(next_question == False):
                             answer[choice].click()
-                             time.sleep(2)
+                            time.sleep(2)
                             try:
                                 nextq = driver1.find_element_by_class_name("headerMessage")
                                 if(end.text == "You got it right!"):
