@@ -17,6 +17,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import NoAlertPresentException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.alert import Alert
+from selenium.webdriver.common.action_chains import ActionChains
 import smtplib
 import re
 import datetime
@@ -104,7 +105,217 @@ def keywords():
             keyWords.append(line.strip())
     print('Library Preparation Successful: ' + str(len(keyWords))+ ' Keywords')
     return keyWords
+def warp_quiz_taker():
+    try:        
+        quiz_to_do = []
+        chrome_options1 = Options()
+        chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
+        chrome_options1.add_argument(current_working_dir)
+        driver1 = webdriver.Chrome(chrome_options = chrome_options1)
+        driver1.get('https://account.microsoft.com/rewards/')
+        time.sleep(2)
+        #class = mosaic-content include all other activities 
+        streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+        other_quiz = driver1.find_elements_by_class_name("mosaic-content")
+        timeout = 1
+        while(streak_quiz == None):
+            print("Failed to get progress - retrying up to 20 times!")
+            print("Try: " + str(timeout))
+            time.sleep(1)
+            timeout = timeout + 1 
+            streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+            if((timeout == 20) and (streak_quiz == None)):
+                print("failed to find quizzes")
+                driver1.quit()
+                return "failed"
+                break
+        timeout = 1
+        while(other_quiz == None):
+            print("Failed to get progress - retrying up to 20 times!")
+            print("Try: " + str(timeout))
+            time.sleep(1)
+            timeout = timeout + 1 
+            other_quiz =  driver1.find_elements_by_class_name("mosaic-content")
+            if((timeout == 20) and (other_quiz == None)):
+                print("failed to find quizzes")
+                driver1.quit()
+                return "failed"
+                break
+        time.sleep(1)
+        print("Found quizzes, selecting incompleted multiple choices quizzes")
+        #get all quizzes
+        for item in streak_quiz:
+            if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
+                #get all incompleted quiz and not warpspeed quiz
+                if(("You did it!" not in item.text) and ("Warpspeed Quiz" in item.text)):
+                    quiz_to_do.append(item)
+        for item in other_quiz:
+            if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
+                #get all incompleted quiz and not warpspeed quiz
+                if(("You did it!" not in item.text) and ("Warpspeed Quiz" in item.text)):
+                    quiz_to_do.append(item)
+        if(len(quiz_to_do) > 0):
+            print("Found incompleted multiple choices quizzes, commencing multiple choice quiz taker: " + str(len(quiz_to_do)) + " Quizzes")
+        else:
+            print("All multiple choice quizzes have been completed!")
+            driver1.quit()
 
+        #current quiz window
+        counter = 1
+        #begins quiz taker
+        for quiz in quiz_to_do:
+            questions = 5 #default is 5 questions
+            #begins the quiz
+            quiz.click()
+            time.sleep(1)
+            #print("before window handle")
+            driver1.switch_to.window(driver1.window_handles[counter])
+            #print("after window handle")
+            time.sleep(1)
+            #answering questions
+            while(questions > 0):
+                #start the quiz
+                try:
+                    start = driver1.find_element_by_id("rqStartQuiz")
+                    if(start != None):
+                        start.click()
+                    time.sleep(1)
+                except:
+                    pass
+                #question 1
+                next_question = False
+                stop = False
+                #if the first thing you see is this then get out
+                try:
+                    timeout = 5
+                    try:
+                        end = driver1.find_element_by_class_name("headerMessage")
+                        if(end.text == "Way to go!"):
+                            stop = True
+                            break
+                    except:
+                        pass
+                    time.sleep(1)
+                    correctAsnwer = []
+                    notDone = True
+                    
+                    a = driver1.find_element_by_id("rqAnswerOption0")
+                    b = driver1.find_element_by_id("rqAnswerOption1")
+                    c = driver1.find_element_by_id("rqAnswerOption2")
+                    d = driver1.find_element_by_id("rqAnswerOption3")
+                    while(a == None or b == None or c == None or d == None):
+                        if(timeout < 0):
+                            break
+                        else:
+                            timeout -= 1
+                        time.sleep(1)
+                        a = driver1.find_element_by_id("rqAnswerOption0")
+                        b = driver1.find_element_by_id("rqAnswerOption1")
+                        c = driver1.find_element_by_id("rqAnswerOption2")
+                        d = driver1.find_element_by_id("rqAnswerOption3")
+                    if(timeout < 0):
+                        print("Can't find any answer, skipping this quiz...")
+                        break
+                    time.sleep(3)
+                    answer = [a,b,c,d]
+                    source_element = randint(0,3)
+                    dest_element = randint(0,3)
+                    while(source_element == dest_element):
+                        source_element = randint(0,3)
+                        dest_element = randint(0,3)
+                    ActionChains(driver1).drag_and_drop(answer[source_element], answer[dest_element]).perform()
+                    time.sleep(1)
+                    while(notDone):
+                        try:
+                            end = driver1.find_element_by_class_name("headerMessage")
+                            if(end.text == "Way to go!"):
+                                stop = True
+                                break
+                        except:
+                            pass
+                        a = driver1.find_element_by_id("rqAnswerOption0")
+                        b = driver1.find_element_by_id("rqAnswerOption1")
+                        c = driver1.find_element_by_id("rqAnswerOption2")
+                        d = driver1.find_element_by_id("rqAnswerOption3")
+                        while(a == None or b == None or c == None or d == None):
+                            if(timeout < 0):
+                                break
+                            else:
+                                timeout -= 1
+                            time.sleep(1)
+                            a = driver1.find_element_by_id("rqAnswerOption0")
+                            b = driver1.find_element_by_id("rqAnswerOption1")
+                            c = driver1.find_element_by_id("rqAnswerOption2")
+                            d = driver1.find_element_by_id("rqAnswerOption3")
+                        if(timeout < 0):
+                            print("Can't find any answer, skipping this quiz...")
+                            break
+                        answer = [a,b,c,d]
+                        source_element = randint(0,3)
+                        dest_element = randint(0,3)
+                        while(source_element == dest_element or answer[source_element].text in correctAsnwer or answer[dest_element].text in correctAsnwer):
+                            if(source_element == dest_element):
+                                source_element = randint(0,3)
+                                dest_element = randint(0,3)
+                            if(answer[source_element].text in correctAsnwer):
+                                source_element = randint(0,3)
+                            if(answer[dest_element].text in correctAsnwer):
+                                dest_element = randint(0,3)
+                        if(source_element != dest_element and answer[source_element].text not in correctAsnwer and answer[dest_element].text not in correctAsnwer):
+                            ActionChains(driver1).drag_and_drop(answer[source_element], answer[dest_element]).perform()
+                            time.sleep(1)
+                        try:
+                            wrong = driver1.find_element_by_id("wrongAnswerMessage")
+                            if(wrong.get_attribute("class") == "wrongAnswerMessage"):
+                                notDone = True
+                        except:
+                            notDone = False
+                            correctAsnwer = []
+                        a = driver1.find_element_by_id("rqAnswerOption0")
+                        b = driver1.find_element_by_id("rqAnswerOption1")
+                        c = driver1.find_element_by_id("rqAnswerOption2")
+                        d = driver1.find_element_by_id("rqAnswerOption3")
+                        while(a == None or b == None or c == None or d == None):
+                            if(timeout < 0):
+                                break
+                            else:
+                                timeout -= 1
+                            time.sleep(1)
+                            a = driver1.find_element_by_id("rqAnswerOption0")
+                            b = driver1.find_element_by_id("rqAnswerOption1")
+                            c = driver1.find_element_by_id("rqAnswerOption2")
+                            d = driver1.find_element_by_id("rqAnswerOption3")
+                        if(timeout < 0):
+                            print("Can't find any answer, skipping this quiz...")
+                            break
+                        answer = [a,b,c,d]
+                        for element in answer:
+                            if("correctDragAnswer" in element.get_attribute("class")):
+                                correctAsnwer.append(element.text)
+                        try:
+                            wrong = driver1.find_element_by_id("wrongAnswerMessage")
+                            if(wrong.get_attribute("class") == "wrongAnswerMessage"):
+                                notDone = True
+                        except:
+                            notDone = False
+                            correctAsnwer = []
+
+                except Exception as E:
+                    print(str(E))
+                    pass
+                questions -= 1
+            counter += 1
+            #go back to main windows to begins next quiz
+            driver1.switch_to.window(driver1.window_handles[0])
+            time.sleep(1)
+        #improve stability here
+        driver1.quit()
+        print("All multiple choice quizzes completed successfully!")
+        return "ok"
+    except Exception as E:
+        print("Failed do quizzes with error: " + str(E))
+        driver1.quit()
+        return "failed"
 #start PC Search on Edge
 def search(range1):
     time1 = datetime.datetime.now()
@@ -843,10 +1054,9 @@ if __name__ == "__main__":
     size = len(keyWords)
     print('Initialize Human Like Search Sequence:')
     #get presearch credits
-    if(advanced_available_points == None):
-        presearch_credits = get_credits()
-    else:
-        presearch_credits = advanced_available_points
+    presearch_credits = get_credits()
+    
+        
     postsearch_credits = 0
     gain = 0
     get_credit_failed = False
@@ -854,6 +1064,7 @@ if __name__ == "__main__":
         get_credit_failed = True
 
     quiz_points_completed,total_quiz_points,Warpspeed_done = quiz_total()
+    print(warp_quiz_taker())
     if(total_quiz_points == "failed"):
         total_quiz_points = 0
         quiz_points_completed = 0
@@ -962,10 +1173,7 @@ if __name__ == "__main__":
             total_legacy_search = MobileSearch + total_legacy_search
             mobile_search(MobileSearch)
     PC_search,Mobile_search,Microsoft_Edge_bonus,advanced_available_points,Other_activities,Streak_count = finalReport()
-    if(advanced_available_points != None):
-        postsearch_credits = advanced_available_points
-        gain = int(postsearch_credits) - int(presearch_credits)
-    elif(get_credit_failed == False):
+    if(get_credit_failed == False):
         postsearch_credits = get_credits()
         gain = int(postsearch_credits) - int(presearch_credits)
     else:
