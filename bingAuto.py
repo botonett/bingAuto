@@ -886,9 +886,9 @@ def quiz_taker():
                 #get all incompleted quiz and not warpspeed quiz
                 if(("You did it!" not in item.text) and ("Warpspeed Quiz" not in item.text)):
                     quiz_to_do.append(item)
-                if("Warpspeed Quiz" in item.text):
-                    print("send mail to let user know there is a Warpspeed Quiz in streak!")
-                    notify("There a Warpspeed Quiz that is preventing bingAuto to completing your streak!")
+                #if("Warpspeed Quiz" in item.text):
+                    #print("send mail to let user know there is a Warpspeed Quiz in streak!")
+                    #notify("There a Warpspeed Quiz that is preventing bingAuto to completing your streak!")
         for item in other_quiz:
             if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
                 #get all incompleted quiz and not warpspeed quiz
