@@ -705,14 +705,14 @@ def complete_streak():
         driver1.get('https://account.microsoft.com/rewards/')
         time.sleep(4)
         #class = mosaic-content include all other activities 
-        data =  driver1.find_elements_by_class_name("rewards-card")
+        data =  driver1.find_elements_by_class_name("c-card-content")
         timeout = 1
         while(data == None):
             print("Failed to get progress - retrying up to 20 times!")
             print("Try: " + str(timeout))
             time.sleep(1)
             timeout = timeout + 1 
-            data =  driver1.find_elements_by_class_name("rewards-card")
+            data =  driver1.find_elements_by_class_name("c-card-content")
             if((timeout == 20) and (data == None)):
                 driver1.quit()
                 return "failed"
