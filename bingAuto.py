@@ -705,14 +705,14 @@ def complete_streak():
         driver1.get('https://account.microsoft.com/rewards/')
         time.sleep(4)
         #class = mosaic-content include all other activities 
-        data =  driver1.find_elements_by_class_name("rewards-card")
+        data =  driver1.find_elements_by_class_name("rewards-card-container")
         timeout = 1
         while(data == None):
             print("Failed to get progress - retrying up to 20 times!")
             print("Try: " + str(timeout))
             time.sleep(1)
             timeout = timeout + 1 
-            data =  driver1.find_elements_by_class_name("rewards-card")
+            data =  driver1.find_elements_by_class_name("rewards-card-container")
             if((timeout == 20) and (data == None)):
                 driver1.quit()
                 return "failed"
@@ -739,7 +739,7 @@ def weekly_quiz_taker():
         time.sleep(2)
         #class = mosaic-content include all other activities 
         #streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
-        other_quiz = driver1.find_elements_by_class_name("c-card-content")
+        other_quiz = driver1.find_elements_by_class_name("rewards-card-container")
         """
         timeout = 1
         while(streak_quiz == None):
@@ -760,7 +760,7 @@ def weekly_quiz_taker():
             print("Try: " + str(timeout))
             time.sleep(1)
             timeout = timeout + 1 
-            other_quiz =  driver1.find_elements_by_class_name("c-card-content")
+            other_quiz =  driver1.find_elements_by_class_name("rewards-card-container")
             if((timeout == 20) and (other_quiz == None)):
                 print("failed to find quizzes")
                 driver1.quit()
@@ -889,7 +889,7 @@ def quiz_total():
         driver1.get('https://account.microsoft.com/rewards/')
         time.sleep(4)
         #class = mosaic-content include all other activities
-        streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+        streak_quiz =  driver1.find_elements_by_class_name("rewards-card-container")
         data =  driver1.find_elements_by_class_name("mosaic-content")
         timeout = 1
         while(streak_quiz == None):
@@ -897,7 +897,7 @@ def quiz_total():
             print("Try: " + str(timeout))
             time.sleep(1)
             timeout = timeout + 1 
-            streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+            streak_quiz =  driver1.find_elements_by_class_name("rewards-card-container")
             if((timeout == 20) and (streak_quiz == None)):
                 print("failed to find quizzes")
                 driver1.quit()
