@@ -728,7 +728,115 @@ def complete_streak():
         print("failed to complete streak cards with errors: " + str(E))
         driver1.quit()
         return "failed"
+def weekly_quiz_taker():
+    try:        
+        quiz_to_do = []
+        chrome_options1 = Options()
+        chrome_options1.add_argument("user-data-dir=C:/Users/"+current_user+"/AppData/Local/Google/Chrome/User Data")
+        chrome_options1.add_argument(current_working_dir)
+        driver1 = webdriver.Chrome(chrome_options = chrome_options1)
+        driver1.get('https://account.microsoft.com/rewards/')
+        time.sleep(2)
+        #class = mosaic-content include all other activities 
+        #streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+        other_quiz = driver1.find_elements_by_class_name("c-card-content")
+        """
+        timeout = 1
+        while(streak_quiz == None):
+            print("Failed to get progress - retrying up to 20 times!")
+            print("Try: " + str(timeout))
+            time.sleep(1)
+            timeout = timeout + 1 
+            streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+            if((timeout == 20) and (streak_quiz == None)):
+                print("failed to find quizzes")
+                driver1.quit()
+                return "failed"
+                break
+        """
+        timeout = 1
+        while(other_quiz == None):
+            print("Failed to get progress - retrying up to 20 times!")
+            print("Try: " + str(timeout))
+            time.sleep(1)
+            timeout = timeout + 1 
+            other_quiz =  driver1.find_elements_by_class_name("c-card-content")
+            if((timeout == 20) and (other_quiz == None)):
+                print("failed to find quizzes")
+                driver1.quit()
+                return "failed"
+                break
+        time.sleep(1)
+        print("Found quizzes, selecting incompleted multiple choices quizzes")
+        #get all quizzes
+        """
+        for item in streak_quiz:
+            if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Quiz" in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
+                #get all incompleted quiz and not warpspeed quiz
+                if(("You did it!" not in item.text) and ("Warpspeed Quiz" in item.text)):
+                    quiz_to_do.append(item)
+        """
+        for item in other_quiz:
+            if(("REDEEM" not in item.text) and ("GOAL" not in item.text) and("Bing quiz" in item.text) and("ORDER" not in item.text)and (len(item.text.split("\n")) > 1)):
+                #get all incompleted quiz and not warpspeed quiz
+                if(("You did it!" not in item.text)):
+                    quiz_to_do.append(item)
+        if(len(quiz_to_do) > 0):
+            print("Found incompleted quizzes, commencing quiz taker: " + str(len(quiz_to_do)) + " Quizzes")
+        else:
+            print("All weekly quizzes have been completed!")
+            driver1.quit()
 
+        #current quiz window
+        counter = 1
+        #begins quiz taker
+        for quiz in quiz_to_do:
+            questions = 7 #default is 5 questions
+            
+            #begins the quiz
+            quiz.click()
+            time.sleep(1)
+            #print("before window handle")
+            driver1.switch_to.window(driver1.window_handles[counter])
+            #print("after window handle")
+            time.sleep(1)
+            #answering questions
+            while(questions > 0):
+                timeout = 5
+                answers = driver1.find_elements_by_class_name("wk_paddingBtm")
+                while(answers == None and timeout > 0):
+                    time.sleep()
+                    answers = driver1.find_elements_by_class_name("wk_paddingBtm")
+                    timeout -= 1
+                if(answers == None):
+                    return "failed"
+                target = []
+                for answer in answers:
+                    target.append(answer)
+                target_size = len(target)-1
+                choice = randint(0,target_size)
+                target[choice].click()
+                time.sleep(1.5)
+                try:
+                    button = driver1.find_element_by_id("check")
+                    button.click()
+                except:
+                    pass
+                time.sleep(1)
+                questions -= 1
+                target = []
+            counter += 1
+            #go back to main windows to begins next quiz
+            driver1.switch_to.window(driver1.window_handles[0])
+            time.sleep(1)
+        #improve stability here
+        driver1.quit()
+        print("Bing weekly search completed sucessfully!")
+        return "ok"
+    except Exception as E:
+        print("Failed do quizzes with error: " + str(E))
+        driver1.quit()
+        return "failed"
 def cards_clicker():
     try:
         report = []
@@ -1065,6 +1173,7 @@ if __name__ == "__main__":
 
     quiz_points_completed,total_quiz_points,Warpspeed_done = quiz_total()
     print(warp_quiz_taker())
+    print(weekly_quiz_taker())
     if(total_quiz_points == "failed"):
         total_quiz_points = 0
         quiz_points_completed = 0
