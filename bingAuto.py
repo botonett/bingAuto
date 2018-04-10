@@ -115,7 +115,7 @@ def warp_quiz_taker():
         driver1.get('https://account.microsoft.com/rewards/')
         time.sleep(2)
         #class = mosaic-content include all other activities 
-        streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+        streak_quiz =  driver1.find_elements_by_class_name("rewards-card-container")
         other_quiz = driver1.find_elements_by_class_name("mosaic-content")
         timeout = 1
         while(streak_quiz == None):
@@ -123,7 +123,7 @@ def warp_quiz_taker():
             print("Try: " + str(timeout))
             time.sleep(1)
             timeout = timeout + 1 
-            streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+            streak_quiz =  driver1.find_elements_by_class_name("rewards-card-container")
             if((timeout == 20) and (streak_quiz == None)):
                 print("failed to find quizzes")
                 driver1.quit()
@@ -960,7 +960,7 @@ def quiz_taker():
         driver1.get('https://account.microsoft.com/rewards/')
         time.sleep(2)
         #class = mosaic-content include all other activities 
-        streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+        streak_quiz =  driver1.find_elements_by_class_name("rewards-card-container")
         other_quiz = driver1.find_elements_by_class_name("mosaic-content")
         timeout = 1
         while(streak_quiz == None):
@@ -968,7 +968,7 @@ def quiz_taker():
             print("Try: " + str(timeout))
             time.sleep(1)
             timeout = timeout + 1 
-            streak_quiz =  driver1.find_elements_by_class_name("rewards-card")
+            streak_quiz =  driver1.find_elements_by_class_name("rewards-card-container")
             if((timeout == 20) and (streak_quiz == None)):
                 print("failed to find quizzes")
                 driver1.quit()
